@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Atrificial Music Composition", "Atrificial Music Composition\Atrificial Music Composition.pyproj", "{F5AA83F4-76CE-46FF-B801-F1F1C0F52226}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Artificial Music Composition", "Artificial Music Composition.pyproj", "{CAE610C8-81CB-4F34-8201-766DB8A7F5E2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,8 +11,8 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F5AA83F4-76CE-46FF-B801-F1F1C0F52226}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5AA83F4-76CE-46FF-B801-F1F1C0F52226}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAE610C8-81CB-4F34-8201-766DB8A7F5E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAE610C8-81CB-4F34-8201-766DB8A7F5E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

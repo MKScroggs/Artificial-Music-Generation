@@ -3,9 +3,9 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{694f1ae9-867d-48bb-b55a-997f693d4155}</ProjectGuid>
+    <ProjectGuid>{cae610c8-81cb-4f34-8201-766db8a7f5e2}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>Atrificial_Music_Composition.py</StartupFile>
+    <StartupFile>ArtificialMusicComposition.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -13,6 +13,7 @@
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <InterpreterId>{2af0f10d-7135-4994-9156-5d01c9c11b7e}</InterpreterId>
     <InterpreterVersion>2.7</InterpreterVersion>
+    <Name>Artificial Music Composition</Name>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
@@ -21,10 +22,11 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Atrificial_Music_Composition.py" />
-    <Compile Include="LSTM_Network.py">
+    <Compile Include="ArtificialMusicComposition.py" />
+    <Compile Include="DataSets.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="LSTMNetwork.py" />
     <Compile Include="MidiConversion.py" />
   </ItemGroup>
   <ItemGroup>
@@ -48,10 +50,8 @@
     <Content Include="Txt\Simple_Scale%28Phrygian%29.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Midi" />
+    <Folder Include="Midi\" />
+    <Folder Include="Txt\" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="{2af0f10d-7135-4994-9156-5d01c9c11b7e}\2.7" />
