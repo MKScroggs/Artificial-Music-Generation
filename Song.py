@@ -26,7 +26,7 @@ class Song(object):
     def get_simple_matrix(self):
         simple_matrix = []
         for line in self.StateMatrix:
-            pass
+            pass 
         pass
 
     def get_full_matrix():
