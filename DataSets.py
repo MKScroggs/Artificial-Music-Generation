@@ -1,4 +1,6 @@
-
+"""
+Contains various preinitialized lists containing similar songs
+"""
 simple_scale_names = [
     "Simple_Scale(Chromatic)",
     "Simple_Scale(Dorian)",
@@ -11,4 +13,6 @@ simple_scale_names = [
     "Simple_Scale(Phrygian)"
 ]
 
+simplest_scale = [
+    "Simple_Scale(Chromatic)"]
 

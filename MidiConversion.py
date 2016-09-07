@@ -2,27 +2,11 @@
 import midi
 import numpy
 import os
+import Song
 
 lowerBound = 20
 upperBound = 108
 volume = 40
-
-
-def load_specified_state_matricies(filenames):
-    dir =  os.path.dirname(os.path.realpath(__file__))
-    songs = []
-    
-    #load the songs
-    for filename in filenames:
-        songs.append(read_state_matrix_file(dir + '/Txt/' + filename))
-    
-    return songs
-
-def convert_default_midi_folder():
-    convert_midi_folder(os.path.dirname(os.path.realpath(__file__)))
-    
-def convert_default_txt_folder():
-    convert_txt_folder(os.path.dirname(os.path.realpath(__file__)))
 
 
 def convert_txt_folder(dir):
@@ -62,7 +46,7 @@ def convert_midi_folder(dir, base_note=4, beats_per_measure=4, smallest_note=4, 
 
 def convert_to_matrix(file_in, file_out, base_note=4, beats_per_measure=4, smallest_note=4, triplets=False, transpostion=0):
     # set vars for conversion
-    time_signature = TimeSignature(base_note, beats_per_measure)
+    time_signature = Song.TimeSignature(base_note, beats_per_measure)
     desired_interval = DesiredInterval(smallest_note, triplets)
 
     # Read the Midi and return the song
@@ -148,34 +132,9 @@ def read_state_matrix_file(filename):
             state_matrix.append(state)
 
         # build the Song object
-        song = Song(name, base_note, beats_per_measure, interval, tempo, numpy.asarray(state_matrix), resolution)
+        song = Song.Song(name, base_note, beats_per_measure, interval, tempo, state_matrix, resolution)
 
     return song
-
-
-
-
-
-
-
-'''
-############# Use the Code above in external functions. ####################
-'''
-
-
-
-
-
-
-
-class TimeSignature(object):
-    """
-    Simple class for the time signature to reduce parameter passing
-    """
-    def __init__(self, beats=4, base=4):
-        self.BeatsPerMeasure = beats # in 2:4 time, this is the 2
-        self.BaseNote = base # and this is the 4
-
 
 class DesiredInterval(object):
     """
@@ -192,32 +151,6 @@ class DesiredInterval(object):
         if self.Triplets:
             return self.SmallestNote * 3
         return self.SmallestNote
-
-
-class Song(object):
-    """
-    Class that holds a song with its metadata
-    """
-    def __init__(self, name, base_note, beats_per_base_note, interval, tempo, state_matrix, resolution):
-        self.TrackName = name
-        self.TimeSignature = TimeSignature(base_note, beats_per_base_note)
-        self.Tempo = tempo
-        self.Interval = interval
-        self.StateMatrix = state_matrix
-        self.Resolution = resolution
-
-    def transpose(self, transposition):
-        """
-        Transposes a statematrix
-        :param old_state_matrix: the matrix to transpose
-        :param transposition: how to transpose it. -X shifts down X positions, +X shifts up X positions
-        :return:
-        """
-        transposed_matrix = []
-        for state in self.StateMatrix:
-            transposed_matrix.append(state[-transposition:] + state[:-transposition])
-
-        self.StateMatrix = transposed_matrix
 
 
 def get_ticks_per_interval(resolution, time_signature, desired_interval):
@@ -333,7 +266,7 @@ def midi_to_note_state_matrix(midifile, name, time_sig, desired_interval, tempo=
         time += 1
 
     # build the song to return
-    song = Song(name, time_sig.BaseNote, time_sig.BeatsPerMeasure, ticks_per_interval, tempo, state_matrix,
+    song = Song.Song(name, time_sig.BaseNote, time_sig.BeatsPerMeasure, ticks_per_interval, tempo, state_matrix,
                 pattern.resolution)
     return song
 
