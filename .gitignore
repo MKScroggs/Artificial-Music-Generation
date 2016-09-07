@@ -104,3 +104,7 @@ bld/
 
 # Python Tools for Visual Studio (PTVS)
 *.pyc
+*.pyproj
+*.sln
+
+.suo
