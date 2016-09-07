@@ -106,5 +106,4 @@ bld/
 *.pyc
 *.pyproj
 *.sln
-
-.suo
+*.suo
