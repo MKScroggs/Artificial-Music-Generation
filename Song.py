@@ -10,7 +10,7 @@ class Song(object):
         self.StateMatrix = state_matrix
         self.Resolution = resolution
 
-    def transpose(self, transposition):
+    def transpose(self, transposition): 
         """
         Transposes a statematrix
         :param old_state_matrix: the matrix to transpose
