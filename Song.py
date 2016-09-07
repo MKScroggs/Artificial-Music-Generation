@@ -26,11 +26,52 @@ class Song(object):
     def get_simple_matrix(self):
         simple_matrix = []
         for line in self.StateMatrix:
-            pass
-        pass
+            simple_matrix.append([x[0] for x in line])
+        return simple_matrix
 
-    def get_full_matrix():
-        pass
+    def get_full_matrix(self):
+        full_matrix = []
+        for line in self.StateMatrix:
+            new_line = []
+            for pair in line:
+                new_line.append(pair[0])
+                new_line.append(pair[1])
+            full_matrix.append(new_line)
+        return full_matrix
+
+    def set_StateMatrix_from_simple_form(self, simple_matrix):
+        state_matrix = []
+
+        length = len(simple_matrix[0])
+        last_line = [0 for i in range(length)]
+        for line in simple_matrix:
+            new_line = []
+            for i in range(length):
+                if line[i] == 0:
+                    new_line.append([0,0])
+                else:
+                    if last_line[i] == 0:
+                        new_line.append([1,1])
+                    else:
+                        new_line.append([1,0])
+            state_matrix.append(new_line)
+            
+        self.StateMatrix = state_matrix 
+
+    def set_StateMatrix_from_full_form(self, full_matrix):
+        state_matrix = []
+
+        # divide by two as every two notes is a pair of hold and press
+        length = len(full_matrix[0])/2
+        
+        for line in full_matrix:
+            new_line = []
+            for i in range(length):
+                index = i * 2
+                new_line.append([line[index], line[index + 1]])
+            state_matrix.append(new_line)
+
+        self.StateMatrix = state_matrix
 
 
 class TimeSignature(object):

@@ -15,9 +15,15 @@ def close():
 def main():
     startup()
 
-    c.convert_specific_midi("Simple_Scale(Chromatic)",'test',smallest_note=8)
+       
     # load training data
-    #test_songs = MC.load_specified_state_matricies(DS.load_simple_scales())
+    test_songs = c.load_specified_state_matricies(DS.simplest_scale)
+    test_song = test_songs[0]
+    test = test_songs[0].get_simple_matrix()
+
+    print test_song.StateMatrix
+    test_song.set_StateMatrix_from_full_form(test_song.get_full_matrix())
+    print test_song.StateMatrix
        
 
 

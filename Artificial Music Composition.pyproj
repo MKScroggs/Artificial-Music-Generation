@@ -36,6 +36,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".gitignore" />
     <Content Include="Midi\Simple_Scale%28Chromatic%29.mid" />
     <Content Include="Midi\Simple_Scale%28Dorian%29.mid" />
     <Content Include="Midi\Simple_Scale%28Harmonic_Minor%29.mid" />
