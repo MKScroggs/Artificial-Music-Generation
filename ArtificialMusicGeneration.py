@@ -1,5 +1,6 @@
 import Conversion as c
 import DataSets as DS
+import LSTMNetwork as LSTM
 import numpy as np
 import os
 
@@ -17,17 +18,11 @@ def main():
 
        
     # load training data
-    test_songs = c.load_specified_state_matricies(DS.simplest_scale)
-    test_song = test_songs[0]
-    test = test_songs[0].get_simple_matrix()
-
-    print test_song.StateMatrix
-    test_song.set_StateMatrix_from_full_form(test_song.get_full_matrix())
-    print test_song.StateMatrix
-       
+    test_songs = c.load_specified_state_matricies(DS.simple_scales)
+    LSTM.LSTM_main(test_songs)
 
 
-    close()
+    #close()
 
 if __name__ == "__main__":
     main()

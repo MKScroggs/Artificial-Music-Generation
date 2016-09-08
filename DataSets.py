@@ -1,7 +1,7 @@
 """
 Contains various preinitialized lists containing similar songs
 """
-simple_scale_names = [
+simple_scales = [
     "Simple_Scale(Chromatic)",
     "Simple_Scale(Dorian)",
     "Simple_Scale(Harmonic_Minor)",

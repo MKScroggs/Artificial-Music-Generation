@@ -9,24 +9,29 @@ upperBound = 108
 volume = 40
 
 
-def convert_txt_folder(dir):
+def convert_txt_folder(dir, overwrite=False):
 
     print "Converting .Txt to .Mid..."
-
+    
     midis = [os.path.splitext(file)[0] for file in os.listdir(dir + "/Midi") if file.endswith('.mid')]
     print "Files in midi directory are: {}".format(midis)
 
     txts = [os.path.splitext(file)[0] for file in os.listdir(dir + "/Txt") if file.endswith('.txt')]
     print "Files in txt directory are:  {}".format(txts)
 
-    for item in [item for item in txts if item not in midis]:
-        print "Converting {} to .mid".format(item)
-        convert_to_midi(dir + "/Txt/" + item, dir + "/Midi/" + item)
+    if overwrite:
+        for item in txts:
+            print "Converting {} to .mid".format(item)
+            convert_to_midi(dir + "/Txt/" + item, dir + "/Midi/" + item)
+    else:
+        for item in [item for item in txts if item not in midis]:
+            print "Converting {} to .mid".format(item)
+            convert_to_midi(dir + "/Txt/" + item, dir + "/Midi/" + item)
 
     print "...Done convertring .Txt to .Mid\n"
 
 
-def convert_midi_folder(dir, base_note=4, beats_per_measure=4, smallest_note=4, triplets=False):
+def convert_midi_folder(dir, overwrite=False, base_note=4, beats_per_measure=4, smallest_note=4, triplets=False):
 
     print "Converting .Mid to .Txt..."
 
@@ -36,10 +41,16 @@ def convert_midi_folder(dir, base_note=4, beats_per_measure=4, smallest_note=4, 
     txts = [os.path.splitext(file)[0] for file in os.listdir(dir + "\\Txt") if file.endswith('.txt')]
     print "Files in txt directory are:  {}".format(txts)
 
-    for item in [item for item in midis if item not in txts]:
-        print "Converting {} to .txt".format(item)
-        convert_to_matrix(dir + "/Midi/" + item, dir + "/Txt/" + item,
+    if overwrite:
+        for item in midis:
+            print "Converting {} to .txt".format(item)
+            convert_to_matrix(dir + "/Midi/" + item, dir + "/Txt/" + item,
                           base_note, beats_per_measure, smallest_note, triplets)
+    else:
+        for item in [item for item in midis if item not in txts]:
+            print "Converting {} to .txt".format(item)
+            convert_to_matrix(dir + "/Midi/" + item, dir + "/Txt/" + item,
+                              base_note, beats_per_measure, smallest_note, triplets)
 
     print "...Done convertring .Mid to .Txt\n"
 
@@ -344,13 +355,12 @@ def get_end_of_notes(matrix):
     for i, state in reversed(list(enumerate(matrix))):
         for note in state:
             if note[0] == 1:
-                return i
+                return i + 1
 
 
 def fix_trailing_rests(song):
     """
-    Ensures that a song has 0 and only 0 blank states to start and 1 and only 1 blank state to end. If not, it makes it
-    so.
+    Ensures that a song has 0 blank states to start and  to end. If not, it makes it so.
     :param song: song to fix (they are almost never right to start...)
     :return: the fixed song
     """
@@ -368,7 +378,6 @@ def fix_trailing_rests(song):
     for state in matrix[start_of_notes:end_of_notes]:
         new_matrix .append(state)
 
-    new_matrix.append(blank_state)
 
     song.StateMatrix = new_matrix
     return song
