@@ -1,28 +1,40 @@
-import Conversion as c
-import DataSets as DS
-import LSTMNetwork as LSTM
+import Conversion
+import DataSets
+import LSTMNetwork
+import Processing
 import numpy as np
 import os
+from time import time
 
 def startup():
     # convert the midi folder to ensure songs are present in txt form
-    c.convert_default_midi_folder()
+    Conversion.convert_default_midi_folder()
+   
+    # return the time to use as an identifier in creating files
+    return str(int(time()))
     
 
 def close():
-    c.convert_default_txt_folder()
+    
+    Conversion.convert_default_txt_folder()
 
 
 def main():
-    startup()
+    # do startup things like prepare txt files. Also get an identifier for the current test to use in file naming and network saving.
+    identifier = startup()
 
        
-    # load training data
-    test_songs = c.load_specified_state_matricies(DS.simple_scales)
-    LSTM.LSTM_main(test_songs)
+    # load training songs
+    training_songs = Conversion.load_specified_state_matricies(DataSets.simple_scales)
+
+    # convert training songs to network usable snippets 
+    training_input, training_target, test_sequence = Processing.get_training_data(training_songs, set_size=8, start=40, width=13)
+
+    # pass data to network for training and genertation
+    LSTMNetwork.main(training_input, training_target, test_sequence, identifier)
 
 
-    #close()
+    close()
 
 if __name__ == "__main__":
     main()

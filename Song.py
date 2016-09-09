@@ -54,6 +54,7 @@ class Song(object):
                         new_line.append([1,1])
                     else:
                         new_line.append([1,0])
+            last_line = new_line
             state_matrix.append(new_line)
             
         self.StateMatrix = state_matrix 
