@@ -107,3 +107,6 @@ bld/
 *.pyproj
 *.sln
 *.suo
+
+KDF/
+MDID/

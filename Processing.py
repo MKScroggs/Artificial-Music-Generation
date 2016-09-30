@@ -1,5 +1,5 @@
 import Song
-import MidiConversion
+import Conversion
 import numpy as np
 from time import time
 import os
@@ -27,6 +27,7 @@ def get_training_data(songs, set_size=8, start=0, width=88):
     preceeding = np.zeros((len(training_preceeding_intervals), set_size - 1, width), dtype=np.bool)
     # (how many datagroups, width of intervals)
     next = np.zeros((len(training_preceeding_intervals), width), dtype=np.bool)
+
     for i, section in enumerate(training_preceeding_intervals):
         for t, interval in enumerate(section):
             for c, note in enumerate(interval):
@@ -63,13 +64,13 @@ def restore_song_size(song, start, width):
 def simple_nparray_to_txt(array, path, name):
     state_matrix = []
 
-    song = Song.Song(name, 4, 4, 240, 120, None, 480)
+    song = Song.Song(name, 4, 4, 120, 120, None, 480)
 
     for i, interval in enumerate(array[0]):
         notes = []
         for j, note in enumerate(interval):
             notes.append(int(array[0, i, j]))
         state_matrix.append(notes)
-    song.set_StateMatrix_from_simple_form(restore_song_size(state_matrix, 40, 13))
+    song.set_StateMatrix_from_simple_form(restore_song_size(state_matrix, 0, 88))
 
-    MidiConversion.write_state_matrix_file(path, song)
+    Conversion.write_state_matrix_file(path, song)
