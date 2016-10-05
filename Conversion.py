@@ -21,7 +21,7 @@ def load_specified_state_matricies(filenames):
     
     return songs
 
-def convert_specific_midi(file_in, song_name, base_note=4, beats_per_measure=4, smallest_note=4, triplets=False, transposition=0):
+def convert_specific_midi(file_in, song_name, base_note=4, beats_per_measure=4, smallest_note=4, triplets=False, transposition="auto"):
     dir = os.path.dirname(os.path.realpath(__file__))
     convert_to_matrix(dir + '/Midi/' + file_in, dir + '/Txt/' + song_name, base_note, beats_per_measure, smallest_note, triplets, transposition)
     pass
@@ -77,7 +77,7 @@ def convert_midi_folder(overwrite=False, base_note=4, beats_per_measure=4, small
     print "...Done convertring .Mid to .Txt\n"
 
 
-def convert_to_matrix(file_in, file_out, base_note=4, beats_per_measure=4, smallest_note=4, triplets=False, transpostion=0):
+def convert_to_matrix(file_in, file_out, base_note=4, beats_per_measure=4, smallest_note=4, triplets=False, transpostion="auto"):
     # set vars for conversion
     time_signature = Song.TimeSignature(base_note, beats_per_measure)
     desired_interval = DesiredInterval(smallest_note, triplets)

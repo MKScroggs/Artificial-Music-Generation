@@ -109,4 +109,8 @@ bld/
 *.suo
 
 KDF/
+Midi/
+Txt/
+.midi
+.txt
 MDID/

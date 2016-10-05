@@ -1,5 +1,5 @@
 """
-Contains various preinitialized lists containing similar songs
+Contains various preinitialized lists containing songs for testing
 """
 simple_scales = [
     "Simple_Scale(Ionian)",
@@ -14,7 +14,14 @@ simple_scales = [
     "Simple_Scale(Phrygian)"
 ]
 
-test =["test"]
+test =[
+    "sonate_01_(c)hisamori",
+    "sonate_02_(c)hisamori",
+    "sonate_03_(c)hisamori",
+    "sonate_04_(c)hisamori",
+    "sonate_14_(c)hisamori"
+    ]
+
 b_error = [
     "sonate_02_(c)hisamori",
     "sonate_27_(c)hisamori",
@@ -65,56 +72,3 @@ major_and_minor_scales = [
     "Simple_Scale(Ionian)",
     "Simple_Scale(Aeolian)"
     ]
-
-nocturn = ["09-1-nocturne"]
-
-pokemon = ['p3', 'p4', 'p5', 'p6']
-
-cavestory = [
-    'cs12',
-    'cs1',
-    'cs2',
-    'cs3',
-    'cs4',
-    'cs5',
-    'cs6',
-    'cs7',
-    'cs8',
-    'cs9',
-    'cs10',
-    'cs11',
-    'cs13',
-    'cs14',
-    'cs15',
-    'cs16',
-    'cs17',
-    'cs18',
-    'cs19',
-    'cs20',
-    'cs21',
-    'cs22',
-    'cs23',
-    'cs24',
-    'cs25',
-    'cs26',
-    'cs27',
-    'cs28',
-    'cs29',
-    'cs30',
-    'cs31',
-    'cs32',
-    'cs33',
-    'cs34'
-]
-
-castlevania = [
-    "Castlevania - Vampire Killer",
-    "Castlevania - Heart of Fire",
-    "Castlevania - Nothing to Lose",
-    "Castlevania - Out of Time",
-    "Castlevania - Stalker",
-    "Castlevania - Underground",
-    "Castlevania - Voyager",
-    "Castlevania - Walking on the Edge",
-    "Castlevania - Wicked Child"
-]
