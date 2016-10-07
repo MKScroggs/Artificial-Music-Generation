@@ -36,7 +36,7 @@ def main():
     network_dir = os.path.dirname(os.path.realpath(__file__)) + "/Networks/" + identifier
 
     # load training songs
-    training_songs = Conversion.load_specified_state_matricies(DataSets.test)
+    training_songs = Conversion.load_specified_state_matricies(DataSets.beethoven_sonatas)
     for song in training_songs:
         song.transpose(verbose=True)
     
@@ -61,7 +61,7 @@ def main():
             for song in songs:
                 Processing.simple_nparray_to_txt(song, generated_dir + "_Iteration_{}".format(i), identifier + "_Iteration_{}".format(i))
         if save_network:
-            name = network_dir + "_Iteration_{}".format(iteration)
+            name = network_dir + "_Iteration_{}".format(i)
             model.save(name)
 
 
