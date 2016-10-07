@@ -27,7 +27,7 @@ def close():
 
 def main():
     interval_width = 88
-    history_length = 8
+    history_length = 48
     save_network = True
 
     # do startup things like prepare txt files. Also get an identifier for the current test to use in file naming and network saving.
@@ -37,7 +37,7 @@ def main():
     network_dir = os.path.dirname(os.path.realpath(__file__)) + "/Networks/" + identifier
 
     # load training songs
-    training_songs = Conversion.load_specified_state_matricies(DataSets.simple_scales)
+    training_songs = Conversion.load_specified_state_matricies(DataSets.beethoven_sonatas)
     for song in training_songs:
         song.transpose(verbose=True)
     
