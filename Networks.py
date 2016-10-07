@@ -1,6 +1,6 @@
 
 from keras.layers import LSTM, GRU, Dense, Activation, Dropout, SimpleRNN
-from keras.models import Sequential
+from keras.models import Sequential, load_model
 import keras.optimizers
 from keras.callbacks import Callback
 from keras import backend
@@ -13,7 +13,7 @@ from time import time
 np.random.seed(6)
 
 class LearningRateCallback(Callback):
-    def __init__(self, update, monitor='loss', patience=1, stop=3):
+    def __init__(self, update, monitor='loss', patience=0, stop=3):
         super(LearningRateCallback, self).__init__()
         
         self.update = update
@@ -129,8 +129,8 @@ def get_GRU(shape, optimizer, loss, interval_width, history_length, activation, 
 
     return model
 
-def train_network(model, inputs, targets, epochs=1, callbacks=[]):
-    model.fit(inputs, targets, nb_epoch=epochs, callbacks=callbacks, batch_size=12)
+def train_network(model, inputs, targets, epochs=1, callbacks=[], batch_size=512):
+    model.fit(inputs, targets, nb_epoch=epochs, callbacks=callbacks, batch_size=batch_size)
     if model.stop_training is True:
         return model, False
     return model, True
@@ -159,6 +159,14 @@ def test_network(model, seed_sequences, notes_to_select, sequence_length, interv
         generated_sequences.append(generated_sequence)
 
     return generated_sequences
+
+def get_network_from_file(filename):
+    model = None
+    try:
+        model = load_model(filename + ".h5")
+    except: #in case the extension was specified
+        model = load_model(filename)
+    return model
 
 """
 def main(training_input, training_target, seed_sequence, identifier, notes_to_select=1, save_network=False):

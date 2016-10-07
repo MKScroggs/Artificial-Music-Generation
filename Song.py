@@ -86,7 +86,7 @@ class Song(object):
 
         self.StateMatrix = state_matrix
         
-    def transpose(self, transposition='auto'): 
+    def transpose(self, transposition='auto', verbose=False): 
         """
         Transposes a statematrix
         :param old_state_matrix: the matrix to transpose
@@ -94,13 +94,17 @@ class Song(object):
         :return:
         """
         if transposition == 'auto':
-            transposition = self.predict_key()
+            transposition = self.predict_key(verbose)
 
         if transposition is not 0:
             transposed_matrix = []
             for state in self.StateMatrix:
                 transposed_matrix.append(state[transposition:] + state[:transposition])
             self.StateMatrix = transposed_matrix
+        if verbose:
+            print("Final state after transposition: ")
+            self.predict_key(verbose)
+
     
     def predict_key(self, verbose=False):
         """
