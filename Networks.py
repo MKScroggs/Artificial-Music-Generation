@@ -44,10 +44,10 @@ class LearningRateCallback(Callback):
                     self.model.stop_training = True
                     print("Stopping Early!")
                     return
-                lr = backend.get_value(self.model.optimizer.lr)
-                backend.set_value(self.model.optimizer.lr, self.update(lr))
+                new_lr = self.update(backend.get_value(self.model.optimizer.lr))
+                backend.set_value(self.model.optimizer.lr, new_lr)
                 
-                print("\nNew Learning rate: {}".format(lr)) 
+                print("\nNew Learning rate: {}".format(new_lr)) 
             self.wait += 1
 
 def get_SimpleRNN(shape, optimizer, loss, interval_width, history_length, activation, dropout=0):
@@ -136,7 +136,7 @@ def train_network(model, inputs, targets, epochs=1, callbacks=[], batch_size=512
         return model, False
     return model, True
 
-def test_network(model, seed_sequences, notes_to_select, sequence_length, interval_width, history_length):
+def test_network(model, seed_sequences, notes_to_select, sequence_length, interval_width, history_length, threshold=.5):
     generated_sequences = []
     for seed_sequence in seed_sequences:
         generated_sequence = seed_sequence
@@ -148,13 +148,7 @@ def test_network(model, seed_sequences, notes_to_select, sequence_length, interv
                     test_sequence[0, j, k] = generated_sequence[0, j + i, k]
 
             prediction = model.predict(test_sequence)[0]
-
-            indeces = np.argpartition(prediction, -notes_to_select)[-notes_to_select:]
-            predicted_matrix = np.zeros((1, 1, interval_width), dtype=np.bool)
-
-            for index in indeces:
-                predicted_matrix[0, 0, index] = True
-
+            predicted_matrix = get_above_percent(prediction, interval_width, percent=threshold)
             generated_sequence = np.append(generated_sequence, predicted_matrix, 1)
 
         generated_sequences.append(generated_sequence)
@@ -168,6 +162,25 @@ def get_network_from_file(filename):
     except: #in case the extension was specified
         model = load_model(filename)
     return model
+
+def get_top_n(prediction, interval_width, n=1):
+    indeces = np.argpartition(prediction, -notes_to_select)[-notes_to_select:]
+    predicted_matrix = np.zeros((1, 1, interval_width), dtype=np.bool)
+
+    for index in indeces:
+        predicted_matrix[0, 0, index] = True
+    
+    return predicted_matrix
+
+def get_above_percent(prediction, interval_width, percent=.7):
+    predicted_matrix = np.zeros((1, 1, interval_width), dtype=np.bool)
+
+    for i, note in enumerate(prediction):
+        if note >= percent:
+       	    predicted_matrix[0, 0, i] = True
+    
+    return predicted_matrix
+    
 
 # from keras
 def fbeta_score(y_true, y_pred, beta=1):
