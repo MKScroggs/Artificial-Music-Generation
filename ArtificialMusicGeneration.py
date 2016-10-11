@@ -39,7 +39,10 @@ def main():
     # load training songs
     training_songs = Conversion.load_specified_state_matricies(DataSets.beethoven_sonatas)
     for song in training_songs:
-        song.transpose()
+        print("\n\n" + song.TrackName)
+        song.transpose(verbose=True)
+
+    return
     print("Making training data...")
     # convert training songs to network usable snippets 
     training_input, training_target, test_sequence = Processing.get_training_data(training_songs, set_size=history_length + 1)
@@ -52,13 +55,13 @@ def main():
 
     learning_rate_callback = Networks.LearningRateCallback(learning_schedule)
 
-    model = Networks.get_LSTM([256,256], optimizer, "mse", interval_width, history_length, "sigmoid", dropout=.1)
+    model = Networks.get_LSTM([1024,1024], optimizer, "binary_crossentropy", interval_width, history_length, "sigmoid", dropout=.1)
     print("Starting training...")
     keep_going = True
     for i in range(100):
         if keep_going:
             print("... Iteration={0}".format(i))
-            model, keep_going = Networks.train_network(model, training_input, training_target, epochs=5, callbacks=[learning_rate_callback], batch_size=256)
+            model, keep_going = Networks.train_network(model, training_input, training_target, epochs=5, callbacks=[learning_rate_callback], batch_size=1024)
             songs = Networks.test_network(model, [test_sequence], 6, 1000, interval_width, history_length, threshold=(.25))
             for song in songs:
                 Processing.simple_nparray_to_txt(song, generated_dir + "_Iteration_{}".format(i), identifier + "_Iteration_{}".format(i))
