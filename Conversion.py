@@ -88,7 +88,7 @@ def convert_to_matrix(file_in, file_out, base_note=4, beats_per_measure=4, small
     # remove extra rests from beggining and end
     song = fix_trailing_rests(song)
 
-    song.transpose(transpostion)
+    song.transpose(transpostion, verbose=True)
     # Write the song to a file
     write_state_matrix_file(file_out, song)
 

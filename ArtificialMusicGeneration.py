@@ -38,11 +38,7 @@ def main():
     
     # load training songs
     training_songs = Conversion.load_specified_state_matricies(DataSets.beethoven_sonatas)
-    for song in training_songs:
-        print("\n\n" + song.TrackName)
-        song.transpose(verbose=True)
 
-    return
     print("Making training data...")
     # convert training songs to network usable snippets 
     training_input, training_target, test_sequence = Processing.get_training_data(training_songs, set_size=history_length + 1)

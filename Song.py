@@ -120,6 +120,7 @@ class Song(object):
 
 
         if verbose:
+            print(mod_counts)
             print(notes[root] + " " + tone)
         transposition = root - 3
         return transposition
