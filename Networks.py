@@ -1,4 +1,3 @@
-
 from keras.layers import LSTM, GRU, Dense, Activation, Dropout, SimpleRNN
 from keras.models import Sequential, load_model
 import keras.optimizers
@@ -14,7 +13,7 @@ from time import time
 np.random.seed(6)
 
 class LearningRateCallback(Callback):
-    def __init__(self, update, monitor='loss', patience=0, stop=3):
+    def __init__(self, update, verbose=False, monitor='loss', patience=0, stop=3):
         super(LearningRateCallback, self).__init__()
         
         self.update = update
@@ -24,6 +23,8 @@ class LearningRateCallback(Callback):
         self.wait = 0
         self.best = np.Inf
         self.stop = 3
+
+        self.verbose = verbose
 
         self.monitor_op = np.less
 
@@ -38,16 +39,19 @@ class LearningRateCallback(Callback):
             self.best = current
             self.wait = 0
         else:
-            print("\nCurrent: {}, Best: {}".format(current, self.best))
+            if self.verbose:
+                print("\nCurrent: {}, Best: {}".format(current, self.best))
             if self.wait >= self.patience:
+                """
                 if self.wait >= self.stop:
                     self.model.stop_training = True
                     print("Stopping Early!")
                     return
+                """
                 new_lr = self.update(backend.get_value(self.model.optimizer.lr))
                 backend.set_value(self.model.optimizer.lr, new_lr)
-                
-                print("\nNew Learning rate: {}".format(new_lr)) 
+                if self.verbose:
+                    print("\nNew Learning rate: {}".format(new_lr)) 
             self.wait += 1
 
 def get_SimpleRNN(shape, optimizer, loss, interval_width, history_length, activation, dropout=0):
@@ -177,108 +181,6 @@ def get_above_percent(prediction, interval_width, percent=.7):
 
     for i, note in enumerate(prediction):
         if note >= percent:
-       	    predicted_matrix[0, 0, i] = True
+            predicted_matrix[0, 0, i] = True
     
     return predicted_matrix
-    
-
-# from keras
-def fbeta_score(y_true, y_pred, beta=1):
-    '''Compute F score, the weighted harmonic mean of precision and recall.
-    This is useful for multi-label classification where input samples can be
-    tagged with a set of labels. By only using accuracy (precision) a model
-    would achieve a perfect score by simply assigning every class to every
-    input. In order to avoid this, a metric should penalize incorrect class
-    assignments as well (recall). The F-beta score (ranged from 0.0 to 1.0)
-    computes this, as a weighted mean of the proportion of correct class
-    assignments vs. the proportion of incorrect class assignments.
-    With beta = 1, this is equivalent to a F-measure. With beta < 1, assigning
-    correct classes becomes more important, and with beta > 1 the metric is
-    instead weighted towards penalizing incorrect class assignments.
-    '''
-    if beta < 0:
-        raise ValueError('The lowest choosable beta is zero (only precision).')
-
-    # Count positive samples.
-    c1 = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
-    c2 = K.sum(K.round(K.clip(y_pred, 0, 1)))
-    c3 = K.sum(K.round(K.clip(y_true, 0, 1)))
-
-    # If there are no true samples, fix the F score at 0.
-    if c3 == 0:
-        return 0
-
-    # How many selected items are relevant?
-    precision = c1 / c2
-
-    # How many relevant items are selected?
-    recall = c1 / c3
-
-    # Weight precision and recall together as a single scalar.
-    beta2 = beta ** 2
-    f_score = (1 + beta2) * (precision * recall) / (beta2 * precision + recall)
-    return f_score
-"""
-def main(training_input, training_target, seed_sequence, identifier, notes_to_select=1, save_network=False):
-    # this is where we will save the resulting networks and music generated at each epoch
-    network_dir = os.path.dirname(os.path.realpath(__file__)) + "/Networks/" + identifier
-    generated_dir = os.path.dirname(os.path.realpath(__file__)) + "/Txt/" + identifier
-    print("Building network model ... Time={}".format(time()))
-
-    history_length = len(training_input[0])
-    interval_width = len(training_input[0][0])
-    print history_length
-    print interval_width
-    model = Sequential()
-
-    #add the LSTM layer 
-    model.add(SimpleRNN(88, input_shape=(history_length, interval_width)))
-    model.add(Dense(interval_width))
-    model.add(Activation('softmax'))
-    
-    optimizer = RMSprop(lr=.01)
-   # optimizer = SGD(lr=.01, momentum=.9, decay=.10, nesterov=True)
-
-    model.compile(optimizer=optimizer, loss='categorical_crossentropy')
-
-    def learning_schedule(lr):
-        return lr * .5
-
-    learning_rate_callback = LearningRateCallback(learning_schedule)
-    
-
-    print("Fitting model ... Time={}".format(time()))
-
-    for iteration in range(1, 200):
-        print("... Iteration={0} ... time={1}".format(iteration, time()))
-        model.fit(training_input, training_target, nb_epoch=1, callbacks=[learning_rate_callback])
-        if save_network:
-            name = network_dir + "_Iteration_{}".format(iteration)
-            model.save(name)
-
-        print("... Generating test sequence ...")
-        generated_sequence = seed_sequence
-            
-        for i in range(50):
-            
-            test_sequence = np.zeros((1, history_length, interval_width), dtype=np.bool)
-            for j in range(history_length):
-                for k in range(interval_width):
-                    test_sequence[0, j, k] = generated_sequence[0, j + i, k]
-      
-
-            prediction = model.predict(test_sequence)[0]
-
-            indeces = np.argpartition(prediction, -notes_to_select)[-notes_to_select:]
-            predicted_matrix = np.zeros((1, 1, interval_width), dtype=np.bool)
-
-            for index in indeces:
-                predicted_matrix[0, 0, index] = True
-
-            generated_sequence = np.append(generated_sequence, predicted_matrix, 1)
-
-        Processing.simple_nparray_to_txt(generated_sequence, generated_dir + "_Iteration_{}".format(iteration), identifier + "_Iteration_{}".format(iteration))
-            
-    return
-
-  """

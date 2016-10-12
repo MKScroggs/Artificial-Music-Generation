@@ -3,9 +3,19 @@ import Conversion
 import numpy as np
 from time import time
 import os
+import random
 
-def get_training_data(songs, set_size=8, start=0, width=88):
-    print("Building training data ... Time={}".format(time()))
+class Data(object):
+    def __init__(self):
+        self.TrainingInput  = []
+        self.TrainingTarget = []
+        self.TestInput      = []
+        self.TestTarget     = []
+        self.SeedInput      = []
+        
+
+def get_training_data(songs, percent_to_train, set_size=8, start=0, width=88):
+    print("Building training data...")
     training_preceeding_intervals = []
     training_next_interval = []
 
@@ -22,7 +32,7 @@ def get_training_data(songs, set_size=8, start=0, width=88):
             training_preceeding_intervals.append(preceeding_intervals)
             training_next_interval.append(matrix[j + set_size - 1])
 
-    print("Vectorizing ... Time={}".format(time()))
+    print("Vectorizing...")
     # (how many datagroups, length of datagroups, width of intervals)
     preceeding = np.zeros((len(training_preceeding_intervals), set_size - 1, width), dtype=np.bool)
     # (how many datagroups, width of intervals)
@@ -35,12 +45,44 @@ def get_training_data(songs, set_size=8, start=0, width=88):
         for n, note in enumerate(training_next_interval[i]):
             next[i, n] = note
 
-    test = np.zeros((1, set_size - 1, width), dtype=np.bool)
-    for i in range(set_size -1):
-        for j in range(width):
-            test[0, i, j] = preceeding[0, i, j]
+    return seperate_into_training_and_test(preceeding, next, percent_to_train)
 
-    return preceeding, next, test
+
+def get_seed_data(songs, set_size=8, start=0, width=88):
+    print("Building seed data...")
+    sequences = []
+
+    matricies = resize_dataset(songs, start, width)
+
+    for i, matrix in enumerate(matricies):
+        intervals = []
+        for k in range(set_size - 1):
+            intervals.append(matrix[k])
+        sequences.append(intervals)
+
+    # (how many datagroups, length of datagroups, width of intervals)
+    seeds = np.zeros((len(training_preceeding_intervals), set_size, width), dtype=np.bool)
+
+    for i, section in enumerate(sequences):
+        for t, interval in enumerate(section):
+            for c, note in enumerate(interval):
+                seeds[i, t, c] = note
+
+    return seeds
+
+
+def seperate_into_training_and_test(preceeding, next, percent_to_train):
+    random.seed(1)
+    data = Data()
+    for i in len(preceeding):
+        if random.random() > percent_to_train:
+            data.TestInput.append(preceeding[i])
+            data.TestTarget.append(next[i])
+        else:
+            data.TrainingInput.append(preceeding[i])
+            data.TrainingTarget.append(next[i])
+    return data
+
 
 def resize_dataset(dataset, start, width):
     print("Resizing matricies ... Time={}".format(time()))

@@ -28,22 +28,26 @@ def close():
 def main():
     interval_width = 88
     history_length = 32
+    batch_size = 1024
+    epochs = 1
+    training_percent = .9
     save_network = True
     print("Starting up...")
     # do startup things like prepare txt files. Also get an identifier for the current test to use in file naming and network saving.
     identifier = startup()
     generated_dir = os.path.dirname(os.path.realpath(__file__)) + "/Txt/" + identifier
     network_dir = os.path.dirname(os.path.realpath(__file__)) + "/Networks/" + identifier
+
     print("Loading songs...")
-    
     # load training songs
     training_songs = Conversion.load_specified_state_matricies(DataSets.beethoven_sonatas)
+    seed_sequences = Conversion.load_specified_state_matricies(DataSets.seed)
 
     print("Making training data...")
     # convert training songs to network usable snippets 
-    training_input, training_target, test_sequence = Processing.get_training_data(training_songs, set_size=history_length + 1)
-    
-    print("Building network")
+    data = Processing.get_training_data(training_songs, percent_to_train=training_percent, set_size=history_length + 1)
+    data.SeedInput = Processing.get_seed_data(seed_sequences, set_size=history_length)
+    print("Building network...")
     optimizer = keras.optimizers.RMSprop (lr=.001)
 
     def learning_schedule(lr):
@@ -52,20 +56,36 @@ def main():
     learning_rate_callback = Networks.LearningRateCallback(learning_schedule)
 
     model = Networks.get_LSTM([1024,1024], optimizer, "binary_crossentropy", interval_width, history_length, "sigmoid", dropout=.1)
+
+
     print("Starting training...")
-    keep_going = True
-    for i in range(100):
-        if keep_going:
-            print("... Iteration={0}".format(i))
-            model, keep_going = Networks.train_network(model, training_input, training_target, epochs=5, callbacks=[learning_rate_callback], batch_size=1024)
-            songs = Networks.test_network(model, [test_sequence], 6, 1000, interval_width, history_length, threshold=(.25))
-            for song in songs:
-                Processing.simple_nparray_to_txt(song, generated_dir + "_Iteration_{}".format(i), identifier + "_Iteration_{}".format(i))
+    keep_going_train = True
+    keep_going_test = True
+    for i in range(1000):
+        # if we haven't stopped learning
+        print("... Iteration={0}".format(i))
+
+        # train the model
+        model, keep_going_train = Networks.train_network(model, data.TrainingInput, data.TrainingTarget, epochs=epochs, callbacks=[learning_rate_callback], batch_size=batch_size)
+            
+        # test the model
+        score = model.evaluate(data.TestInput, data.TestTarget, batch_size=batch_size)
+        keep_going_test = True
+
+        # make a sample song
+        songs = Networks.test_network(model, data.SeedInput, 6, 1000, interval_width, history_length, threshold=(.25))
+            
+        # convert generated songs to txt files
+        for song in songs:
+            Processing.simple_nparray_to_txt(song, generated_dir + "_Iteration_{}".format(i), identifier + "_Iteration_{}".format(i))
+
+        # save the network for reuse
         if save_network:
             name = network_dir + "_Iteration_{}".format(i)
             model.save(name)
-
-
+        
+        if keep_going_train is False or keep_going_test is False:
+            break
     close()
 
 
