@@ -15,9 +15,12 @@ class Data(object):
         
 
 def get_training_data(songs, percent_to_train, set_size=8, start=0, width=88):
+    random.seed(1)
     print("Building training data...")
     training_preceeding_intervals = []
     training_next_interval = []
+    testing_preceeding_intervals = []
+    testing_next_interval = []
 
     matricies = resize_dataset(songs, start, width)
 
@@ -29,24 +32,47 @@ def get_training_data(songs, percent_to_train, set_size=8, start=0, width=88):
             preceeding_intervals = []
             for k in range(set_size - 1):
                 preceeding_intervals.append(matrix[j + k])
-            training_preceeding_intervals.append(preceeding_intervals)
-            training_next_interval.append(matrix[j + set_size - 1])
 
-    print("Vectorizing...")
+            if random.random() <= percent_to_train:
+                training_preceeding_intervals.append(preceeding_intervals)
+                training_next_interval.append(matrix[j + set_size - 1])
+            else:
+                testing_preceeding_intervals.append(preceeding_intervals)
+                testing_next_interval.append(matrix[j + set_size - 1])
+
+    print("Vectorizing training data...")
     # (how many datagroups, length of datagroups, width of intervals)
-    preceeding = np.zeros((len(training_preceeding_intervals), set_size - 1, width), dtype=np.bool)
+    training_input = np.zeros((len(training_preceeding_intervals), set_size - 1, width), dtype=np.bool)
     # (how many datagroups, width of intervals)
-    next = np.zeros((len(training_preceeding_intervals), width), dtype=np.bool)
+    training_target = np.zeros((len(training_preceeding_intervals), width), dtype=np.bool)
 
     for i, section in enumerate(training_preceeding_intervals):
         for t, interval in enumerate(section):
             for c, note in enumerate(interval):
-                preceeding[i, t, c] = note
+                training_input[i, t, c] = note
         for n, note in enumerate(training_next_interval[i]):
-            next[i, n] = note
+            training_target[i, n] = note
 
-    return seperate_into_training_and_test(preceeding, next, percent_to_train)
+    print("Vectorizing testing data...")
+    # (how many datagroups, length of datagroups, width of intervals)
+    test_input = np.zeros((len(testing_preceeding_intervals), set_size - 1, width), dtype=np.bool)
+    # (how many datagroups, width of intervals)
+    test_target = np.zeros((len(testing_preceeding_intervals), width), dtype=np.bool)
 
+    for i, section in enumerate(testing_preceeding_intervals):
+        for t, interval in enumerate(section):
+            for c, note in enumerate(interval):
+                test_input[i, t, c] = note
+        for n, note in enumerate(testing_next_interval[i]):
+            test_target[i, n] = note
+
+    data = Data()
+    data.TestInput = test_input
+    data.TestTarget = test_target
+    data.TrainingInput = training_input
+    data.TrainingTarget = training_target
+
+    return data
 
 def get_seed_data(songs, set_size=8, start=0, width=88):
     print("Building seed data...")
@@ -60,30 +86,16 @@ def get_seed_data(songs, set_size=8, start=0, width=88):
             intervals.append(matrix[k])
         sequences.append(intervals)
 
-    # (how many datagroups, length of datagroups, width of intervals)
-    seeds = np.zeros((len(songs), set_size, width), dtype=np.bool)
-
-    for i, section in enumerate(sequences):
-        for t, interval in enumerate(section):
+    seeds = []
+    for song in sequences:
+        # (how many datagroups, length of datagroups, width of intervals)
+        seed = np.zeros((1, set_size, width), dtype=np.bool)
+        for t, interval in enumerate(song):
             for c, note in enumerate(interval):
-                seeds[i, t, c] = note
+                seed[0, t, c] = note
+        seeds.append(seed)
 
     return seeds
-
-
-def seperate_into_training_and_test(preceeding, next, percent_to_train):
-    print("Seperating training and testing data...")
-    random.seed(1)
-    data = Data()
-    for i in range(len(preceeding)):
-        if random.random() > percent_to_train:
-            data.TestInput.append(preceeding[i])
-            data.TestTarget.append(next[i])
-        else:
-            data.TrainingInput.append(preceeding[i])
-            data.TrainingTarget.append(next[i])
-    return data
-
 
 def resize_dataset(dataset, start, width):
     print("Resizing matricies...")
