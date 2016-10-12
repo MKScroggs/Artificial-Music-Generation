@@ -56,12 +56,12 @@ def get_seed_data(songs, set_size=8, start=0, width=88):
 
     for i, matrix in enumerate(matricies):
         intervals = []
-        for k in range(set_size - 1):
+        for k in range(set_size):
             intervals.append(matrix[k])
         sequences.append(intervals)
 
     # (how many datagroups, length of datagroups, width of intervals)
-    seeds = np.zeros((len(training_preceeding_intervals), set_size, width), dtype=np.bool)
+    seeds = np.zeros((len(songs), set_size, width), dtype=np.bool)
 
     for i, section in enumerate(sequences):
         for t, interval in enumerate(section):
@@ -72,9 +72,10 @@ def get_seed_data(songs, set_size=8, start=0, width=88):
 
 
 def seperate_into_training_and_test(preceeding, next, percent_to_train):
+    print("Seperating training and testing data...")
     random.seed(1)
     data = Data()
-    for i in len(preceeding):
+    for i in range(len(preceeding)):
         if random.random() > percent_to_train:
             data.TestInput.append(preceeding[i])
             data.TestTarget.append(next[i])
@@ -85,7 +86,7 @@ def seperate_into_training_and_test(preceeding, next, percent_to_train):
 
 
 def resize_dataset(dataset, start, width):
-    print("Resizing matricies ... Time={}".format(time()))
+    print("Resizing matricies...")
     training_data = []
     for song in dataset:
         matrix = song.get_simple_matrix()

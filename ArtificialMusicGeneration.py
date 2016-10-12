@@ -40,8 +40,8 @@ def main():
 
     print("Loading songs...")
     # load training songs
-    training_songs = Conversion.load_specified_state_matricies(DataSets.beethoven_sonatas)
     seed_sequences = Conversion.load_specified_state_matricies(DataSets.seed)
+    training_songs = Conversion.load_specified_state_matricies(DataSets.beethoven_sonatas)
 
     print("Making training data...")
     # convert training songs to network usable snippets 
