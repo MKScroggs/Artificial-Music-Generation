@@ -27,9 +27,9 @@ def close():
 
 def main():
     interval_width = 88
-    history_length = 8
+    history_length = 16 * 6
     batch_size = 1024
-    epochs = 5
+    epochs = 1
     training_percent = .9
     save_network = True
     print("Starting up...")
@@ -41,7 +41,7 @@ def main():
     print("Loading songs...")
     # load training songs
     seed_sequences = Conversion.load_specified_state_matricies(DataSets.seed)
-    training_songs = Conversion.load_specified_state_matricies(DataSets.simple_scales)
+    training_songs = Conversion.load_specified_state_matricies(DataSets.beethoven_sonatas)
 
     print("Making training data...")
     # convert training songs to network usable snippets 
@@ -55,12 +55,12 @@ def main():
 
     learning_rate_callback = Networks.LearningRateCallback(learning_schedule)
 
-    model = Networks.get_LSTM([1024, 1024], optimizer, "binary_crossentropy", interval_width, history_length, "sigmoid", dropout=.3)
+    model = Networks.get_LSTM([512, 512], optimizer, "binary_crossentropy", interval_width, history_length, "sigmoid", dropout=.3, metrics=['accuracy'])
 
     print("Starting training...")
     keep_going_train = True
     keep_going_test = True
-    for i in range(1000):
+    for i in range(50):
         # if we haven't stopped learning
         print("\n... Iteration={0}".format(i))
 
