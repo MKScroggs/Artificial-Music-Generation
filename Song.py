@@ -32,7 +32,10 @@ class Song(object):
         self.Tempo = tempo
         self.Interval = interval
         self.StateMatrix = state_matrix
+        self.MelodyStateMatrix = []
         self.Resolution = resolution
+
+        self.set_melodymatrix_from_StateMatrix()
 
 
     def get_simple_matrix(self):
@@ -41,9 +44,26 @@ class Song(object):
             simple_matrix.append([x[0] for x in line])
         return simple_matrix
 
+    def get_simple_melody_matrix(self):
+        simple_matrix = []
+        for line in self.MelodyStateMatrix:
+            simple_matrix.append([x[0] for x in line])
+        return simple_matrix
+
     def get_full_matrix(self):
         full_matrix = []
         for line in self.StateMatrix:
+            new_line = []
+            for pair in line:
+                new_line.append(pair[0])
+                new_line.append(pair[1])
+            full_matrix.append(new_line)
+        return full_matrix
+
+
+    def get_full_melody_matrix(self):
+        full_matrix = []
+        for line in self.MelodyStateMatrix:
             new_line = []
             for pair in line:
                 new_line.append(pair[0])
@@ -70,6 +90,7 @@ class Song(object):
             state_matrix.append(new_line)
             
         self.StateMatrix = state_matrix 
+        self.set_melodymatrix_from_StateMatrix()
 
     def set_StateMatrix_from_full_form(self, full_matrix):
         state_matrix = []
@@ -85,6 +106,44 @@ class Song(object):
             state_matrix.append(new_line)
 
         self.StateMatrix = state_matrix
+        self.set_melodymatrix_from_StateMatrix()
+
+    def set_melodymatrix_from_StateMatrix(self):
+        melody_matrix = []
+
+        blank_interval = [[0,0] for note in self.StateMatrix[0]]
+
+        last = -1
+        # for each interval
+        for i, interval in enumerate(self.StateMatrix):
+            # add a blank interval
+            melody_matrix.append(blank_interval)
+
+            # TODO: this should probably be made to run in reverse
+            # find the highest note
+            highest = -1
+            for n, note in enumerate(interval):
+                if note[0]:
+                    # if the note is higher or equal than the prior highest note, record it
+                    if n >= last:
+                        highest = n
+
+                    #if the note is lower, but also just pressed that interval, record it. If higher notes are pressed, it will get overwritten
+                    elif note[1]:
+                        highest = n
+
+            # if highest == -1, then this is a rest, so dont record anythin
+            if highest != -1:
+                # now record the change
+                melody_matrix[i][highest][0] = 1
+                # record if it is a key press too
+                if highest != last:
+                    melody_matrix[i][highest][1] = 1 # if higest != last record a press, since the main song may not have it as such.
+                else:
+                    melody_matrix[i][highest][1] = interval[highest][1] # if highest == last, record the songs data as it may be repeating notes.
+                
+            # finally record highest as the last note.
+            last = highest
         
     def transpose(self, transposition='auto', verbose=False): 
         """
@@ -101,6 +160,7 @@ class Song(object):
             for state in self.StateMatrix:
                 transposed_matrix.append(state[transposition:] + state[:transposition])
             self.StateMatrix = transposed_matrix
+            self.set_melodymatrix_from_StateMatrix()
         if verbose:
             print("Final state after transposition: ")
             self.predict_key(verbose)

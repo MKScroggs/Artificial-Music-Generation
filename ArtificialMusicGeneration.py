@@ -41,7 +41,7 @@ def main():
     print("Loading songs...")
     # load training songs
     seed_sequences = Conversion.load_specified_state_matricies(DataSets.seed)
-    training_songs = Conversion.load_specified_state_matricies(DataSets.beethoven_sonatas)
+    training_songs = Conversion.load_specified_state_matricies(DataSets.simple_scales)
 
     print("Making training data...")
     # convert training songs to network usable snippets 
@@ -69,18 +69,16 @@ def main():
             
         # test the model
         score = model.evaluate(data.TestInput, data.TestTarget, batch_size=batch_size)
-        keep_going_test = True
+        keep_going_test = True # TODO: placeholder for future plans to stop on test result
         print("The score is {}".format(score))
 
-        # make a sample song
-        songs = Networks.test_network(model, data.SeedInput, 6, 1000, interval_width, history_length, threshold=(.25))
+        # make sample songs and save them
+        for seedcount, seed in enumerate(data.SeedInput):
+            song = Networks.test_melody_network(model, seed, 1000, interval_width, history_length)
+            Processing.simple_nparray_to_txt(song, generated_dir + "_Iteration_{}_Seed_{}".format(i, seedcount), identifier + "_Iteration_{}".format(i))
             
-        # convert generated songs to txt files
-        for song in songs:
-            Processing.simple_nparray_to_txt(song, generated_dir + "_Iteration_{}".format(i), identifier + "_Iteration_{}".format(i))
-
         # save the network for reuse
-        if save_network:
+        if save_network: 
             name = network_dir + "_Iteration_{}".format(i)
             model.save(name)
         

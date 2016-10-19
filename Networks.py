@@ -140,10 +140,58 @@ def train_network(model, inputs, targets, epochs=1, callbacks=[], batch_size=512
         return model, False
     return model, True
 
-def test_network(model, seed_sequences, notes_to_select, sequence_length, interval_width, history_length, threshold=.5):
-    generated_sequences = []
-    for seed_sequence in seed_sequences:
-        generated_sequence = seed_sequence
+def test_melody_network(model, seed_sequence, sequence_length, interval_width, history_length):
+    generated_sequence = seed_sequence
+    for i in range(sequence_length):
+        # make a window into the generated sequence that is of the proper length
+        test_sequence = np.zeros((1, history_length, interval_width), dtype=np.bool)
+        for j in range(history_length):
+            for k in range(interval_width):
+                test_sequence[0, j, k] = generated_sequence[0, j + i, k]
+
+        prediction = model.predict(test_sequence)[0]
+
+        # pick the best note
+        predicted_matrix = get_top_n(prediction, interval_width, n=1)
+        generated_sequence = np.append(generated_sequence, predicted_matrix, 1)
+
+    return generated_sequence
+
+def test_accompaniment_network(model, melody, notes_to_select, history_length, threshold=.5):
+    generated_sequence = []
+
+    for i in range(len(history_length - 1)):
+        generated_sequence.append(melody[i]) # start the accompaniment generation at the end of the seed to the melody generation
+
+    for i in range(len(test_melody_network) - history_length): # the first 'history length' notes are the seed to the melody, so leave them alone.
+        # make a window into the generated sequence that is of the proper length
+        test_sequence = np.zeros((1, history_length, interval_width), dtype=np.bool)
+        for j in range(history_length - 1): # history - 1 to allow adding the seed melody on.
+            for k in range(interval_width):
+                test_sequence[0, j, k] = generated_sequence[0, j + i, k]
+
+        melody_note = -1
+        for k in range(interval_width): # find the melody seed
+            if melody[0, history_length + i, k] == 1:
+                melody_note = k
+                break
+        if melody_note != -1: # if it is -1, there was a rest
+            test_sequence[0, history_length - 1, melody_note] = 1
+
+        prediction = model.predict(test_sequence)[0]
+        predicted_matrix = get_above_percent(prediction, interval_width, percent=threshold)
+        
+        if melody_note != -1: # if there was a predicted melody note, make sure the accompaniment network did not lose it
+            predicted_matrix[0, history_length - 1, melody_note] = 1
+
+        generated_sequence = np.append(generated_sequence, predicted_matrix, 1)
+
+    return generated_sequence
+
+'''
+def test_network(model, melody, notes_to_select, history_length, threshold=.5):
+    for melody in melodies:
+        generated_sequence = melody
         for i in range(sequence_length):
             # make a window into the generated sequence that is of the proper length
             test_sequence = np.zeros((1, history_length, interval_width), dtype=np.bool)
@@ -158,7 +206,7 @@ def test_network(model, seed_sequences, notes_to_select, sequence_length, interv
         generated_sequences.append(generated_sequence)
 
     return generated_sequences
-
+    '''
 def get_network_from_file(filename):
     model = None
     try:
