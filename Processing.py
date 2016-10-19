@@ -12,9 +12,77 @@ class Data(object):
         self.TestInput      = []
         self.TestTarget     = []
         self.SeedInput      = []
+
+        
+def get_melody_training_data(songs, percent_to_train, set_size=8, start=0, width=88):
+    random.seed(1)
+    print("Building training data...")
+    training_preceeding_intervals = []
+    training_next_interval = []
+    testing_preceeding_intervals = []
+    testing_next_interval = []
+    
+    print("Resizing matricies...")
+    matricies = []
+    for song in songs:
+        matrix = song.get_simple_melody_matrix()
+        resized_matrix = []
+        for line in matrix:
+            resized_matrix.append(line[start:start + width])
+        matricies.append(resized_matrix)
+
+    for i, matrix in enumerate(matricies):
+        print("... Building subsets for song {}".format(i))
+        length = len(matrix)
+
+        for j in range(length - set_size + 1):
+            preceeding_intervals = []
+            for k in range(set_size - 1):
+                preceeding_intervals.append(matrix[j + k])
+
+            if random.random() <= percent_to_train:
+                training_preceeding_intervals.append(preceeding_intervals)
+                training_next_interval.append(matrix[j + set_size - 1])
+            else:
+                testing_preceeding_intervals.append(preceeding_intervals)
+                testing_next_interval.append(matrix[j + set_size - 1])
+
+    print("Vectorizing training data...")
+    # (how many datagroups, length of datagroups, width of intervals)
+    training_input = np.zeros((len(training_preceeding_intervals), set_size - 1, width), dtype=np.bool)
+    # (how many datagroups, width of intervals)
+    training_target = np.zeros((len(training_preceeding_intervals), width), dtype=np.bool)
+
+    for i, section in enumerate(training_preceeding_intervals):
+        for t, interval in enumerate(section):
+            for c, note in enumerate(interval):
+                training_input[i, t, c] = note
+        for n, note in enumerate(training_next_interval[i]):
+            training_target[i, n] = note
+
+    print("Vectorizing testing data...")
+    # (how many datagroups, length of datagroups, width of intervals)
+    test_input = np.zeros((len(testing_preceeding_intervals), set_size - 1, width), dtype=np.bool)
+    # (how many datagroups, width of intervals)
+    test_target = np.zeros((len(testing_preceeding_intervals), width), dtype=np.bool)
+
+    for i, section in enumerate(testing_preceeding_intervals):
+        for t, interval in enumerate(section):
+            for c, note in enumerate(interval):
+                test_input[i, t, c] = note
+        for n, note in enumerate(testing_next_interval[i]):
+            test_target[i, n] = note
+
+    data = Data()
+    data.TestInput = test_input
+    data.TestTarget = test_target
+    data.TrainingInput = training_input
+    data.TrainingTarget = training_target
+
+    return data
         
 
-def get_training_data(songs, percent_to_train, set_size=8, start=0, width=88):
+def get_accompaniment_training_data(songs, percent_to_train, set_size=8, start=0, width=88):
     random.seed(1)
     print("Building training data...")
     training_preceeding_intervals = []

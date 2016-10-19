@@ -216,7 +216,7 @@ def get_network_from_file(filename):
     return model
 
 def get_top_n(prediction, interval_width, n=1):
-    indeces = np.argpartition(prediction, -notes_to_select)[-notes_to_select:]
+    indeces = np.argpartition(prediction, -n)[-n:]
     predicted_matrix = np.zeros((1, 1, interval_width), dtype=np.bool)
 
     for index in indeces:

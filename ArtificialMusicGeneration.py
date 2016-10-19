@@ -27,7 +27,7 @@ def close():
 
 def main():
     interval_width = 88
-    history_length = 16 * 6
+    history_length = 16*6
     batch_size = 1024
     epochs = 1
     training_percent = .9
@@ -45,8 +45,9 @@ def main():
 
     print("Making training data...")
     # convert training songs to network usable snippets 
-    data = Processing.get_training_data(training_songs, percent_to_train=training_percent, set_size=history_length + 1)
+    data = Processing.get_melody_training_data(training_songs, percent_to_train=training_percent, set_size=history_length + 1)
     data.SeedInput = Processing.get_seed_data(seed_sequences, set_size=history_length)
+
     print("Building network...")
     optimizer = keras.optimizers.RMSprop (lr=.001)
 
@@ -55,7 +56,7 @@ def main():
 
     learning_rate_callback = Networks.LearningRateCallback(learning_schedule)
 
-    model = Networks.get_LSTM([512, 512], optimizer, "binary_crossentropy", interval_width, history_length, "sigmoid", dropout=.3, metrics=['accuracy'])
+    model = Networks.get_LSTM([32, 32], optimizer, "categorical_crossentropy", interval_width, history_length, "softmax", dropout=.3, metrics=['accuracy'])
 
     print("Starting training...")
     keep_going_train = True

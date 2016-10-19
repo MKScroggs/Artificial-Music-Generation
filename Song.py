@@ -34,8 +34,7 @@ class Song(object):
         self.StateMatrix = state_matrix
         self.MelodyStateMatrix = []
         self.Resolution = resolution
-
-        self.set_melodymatrix_from_StateMatrix()
+        self.melody_matrix_set=False
 
 
     def get_simple_matrix(self):
@@ -45,6 +44,8 @@ class Song(object):
         return simple_matrix
 
     def get_simple_melody_matrix(self):
+        if self.melody_matrix_set is False:
+            self.set_melodymatrix_from_StateMatrix()
         simple_matrix = []
         for line in self.MelodyStateMatrix:
             simple_matrix.append([x[0] for x in line])
@@ -62,6 +63,8 @@ class Song(object):
 
 
     def get_full_melody_matrix(self):
+        if self.melody_matrix_set is False:
+            self.set_melodymatrix_from_StateMatrix()
         full_matrix = []
         for line in self.MelodyStateMatrix:
             new_line = []
@@ -117,7 +120,7 @@ class Song(object):
         # for each interval
         for i, interval in enumerate(self.StateMatrix):
             # add a blank interval
-            melody_matrix.append(blank_interval)
+            melody_matrix.append([[0,0] for note in self.StateMatrix[0]])
 
             # TODO: this should probably be made to run in reverse
             # find the highest note
@@ -144,6 +147,10 @@ class Song(object):
                 
             # finally record highest as the last note.
             last = highest
+
+        # store the result
+        self.MelodyStateMatrix = melody_matrix
+        self.melody_matrix_set = True
         
     def transpose(self, transposition='auto', verbose=False): 
         """
