@@ -152,7 +152,7 @@ def test_melody_network(model, seed_sequence, sequence_length, interval_width, h
         prediction = model.predict(test_sequence)[0]
 
         # pick the best note
-        predicted_matrix = get_top_n(prediction, interval_width, n=1)
+        predicted_matrix = sample(prediction, interval_width, temperature=1)
         generated_sequence = np.append(generated_sequence, predicted_matrix, 1)
 
     return generated_sequence
@@ -232,3 +232,15 @@ def get_above_percent(prediction, interval_width, percent=.7):
             predicted_matrix[0, 0, i] = True
     
     return predicted_matrix
+
+def sample(predictions, interval_width, temperature=1.0):
+    # helper function to sample an index from a probability array, modified from keras lstm example
+    predictions = np.asarray(predictions).astype('float64')
+    predictions = np.log(predictions) / temperature
+    exp_predictions = np.exp(predictions)
+    predictions = exp_predictions / np.sum(exp_predictions)
+    probabilities = np.random.multinomial(1, predictions, 1)
+    predicted_matrix = np.zeros((1, 1, interval_width), dtype=np.bool)
+    predicted_matrix[0, 0, np.argmax(probabilities)] = 1
+    return predicted_matrix
+
