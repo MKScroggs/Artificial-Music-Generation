@@ -127,8 +127,8 @@ if __name__ == "__main__":
             print("Empty field for 'network'.")
     else: # do a full run
         def learning_schedule(lr):
-            return lr * .9
+            return lr * .93
 
         learning_rate_callback = Networks.LearningRateCallback(learning_schedule)
-        early_stoping_callback = callbacks.EarlyStopping(patience=2)
-        full_run(iterations=2, callbacks=[learning_rate_callback, early_stoping_callback], learning_rate=.005, train_dataset=DataSets.simple_scales, history_length=4, shape=[12,12])
+        early_stoping_callback = callbacks.EarlyStopping(patience=1)
+        full_run(iterations=200, callbacks=[learning_rate_callback, early_stoping_callback], learning_rate=.001, train_dataset=DataSets.full_data, history_length=16*4)
