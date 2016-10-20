@@ -13,6 +13,16 @@ from time import time
 np.random.seed(6)
 
 class LearningRateCallback(Callback):
+    def __init__(self, update):
+        super(LearningRateCallback, self).__init__()
+        self.update = update
+
+    def on_epoch_end(self, epoch, logs={}):
+        new_lr = self.update(backend.get_value(self.model.optimizer.lr))
+        backend.set_value(self.model.optimizer.lr, new_lr)
+
+'''
+class LearningRateCallback(Callback):
     def __init__(self, update, verbose=False, monitor='loss', patience=0, stop=3):
         super(LearningRateCallback, self).__init__()
         
@@ -27,10 +37,6 @@ class LearningRateCallback(Callback):
         self.verbose = verbose
 
         self.monitor_op = np.less
-
-    #def on_train_begin(self, logs={}):
-        #self.wait = 0       # Allow instances to be re-used
-        #self.best = np.Inf if self.monitor_op == np.less else -np.Inf
 
     def on_epoch_end(self, epoch, logs={}):
         current = logs.get(self.monitor)
@@ -53,6 +59,7 @@ class LearningRateCallback(Callback):
                 if self.verbose:
                     print("\nNew Learning rate: {}".format(new_lr)) 
             self.wait += 1
+'''
 
 def get_SimpleRNN(shape, optimizer, loss, interval_width, history_length, activation, dropout=0):
     model = Sequential()
@@ -134,11 +141,19 @@ def get_GRU(shape, optimizer, loss, interval_width, history_length, activation, 
 
     return model
 
-def train_network(model, inputs, targets, epochs=1, callbacks=[], batch_size=512):
-    model.fit(inputs, targets, nb_epoch=epochs, callbacks=callbacks, batch_size=batch_size)
-    if model.stop_training is True:
-        return model, False
-    return model, True
+
+def get_network_from_file(filename):
+    model = None
+    try:
+        model = load_model(filename + ".h5")
+    except: #in case the extension was specified
+        model = load_model(filename)
+    return model
+
+
+def train_network(model, train_inputs, train_targets, val_inputs, val_targets, epochs=1, callbacks=[], batch_size=512):
+    model.fit(train_inputs, train_targets, nb_epoch=epochs, callbacks=callbacks, batch_size=batch_size, validation_data=(val_inputs, val_targets))
+    return model
 
 def test_melody_network(model, seed_sequence, sequence_length, interval_width, history_length):
     generated_sequence = seed_sequence
@@ -188,32 +203,6 @@ def test_accompaniment_network(model, melody, notes_to_select, history_length, t
 
     return generated_sequence
 
-'''
-def test_network(model, melody, notes_to_select, history_length, threshold=.5):
-    for melody in melodies:
-        generated_sequence = melody
-        for i in range(sequence_length):
-            # make a window into the generated sequence that is of the proper length
-            test_sequence = np.zeros((1, history_length, interval_width), dtype=np.bool)
-            for j in range(history_length):
-                for k in range(interval_width):
-                    test_sequence[0, j, k] = generated_sequence[0, j + i, k]
-
-            prediction = model.predict(test_sequence)[0]
-            predicted_matrix = get_above_percent(prediction, interval_width, percent=threshold)
-            generated_sequence = np.append(generated_sequence, predicted_matrix, 1)
-
-        generated_sequences.append(generated_sequence)
-
-    return generated_sequences
-    '''
-def get_network_from_file(filename):
-    model = None
-    try:
-        model = load_model(filename + ".h5")
-    except: #in case the extension was specified
-        model = load_model(filename)
-    return model
 
 def get_top_n(prediction, interval_width, n=1):
     indeces = np.argpartition(prediction, -n)[-n:]
@@ -224,6 +213,7 @@ def get_top_n(prediction, interval_width, n=1):
     
     return predicted_matrix
 
+
 def get_above_percent(prediction, interval_width, percent=.7):
     predicted_matrix = np.zeros((1, 1, interval_width), dtype=np.bool)
 
@@ -232,6 +222,7 @@ def get_above_percent(prediction, interval_width, percent=.7):
             predicted_matrix[0, 0, i] = True
     
     return predicted_matrix
+
 
 def sample(predictions, interval_width, temperature=1.0):
     # helper function to sample an index from a probability array, modified from keras lstm example

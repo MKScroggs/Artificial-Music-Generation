@@ -14,7 +14,7 @@ class Data(object):
         self.SeedInput      = []
 
         
-def get_melody_training_data(songs, percent_to_train, set_size=8, start=0, width=88):
+def get_melody_training_data(songs, percent_to_train, set_size=8, start=0, width=88, data=None):
     random.seed(1)
     print("Building training data...")
     training_preceeding_intervals = []
@@ -72,8 +72,9 @@ def get_melody_training_data(songs, percent_to_train, set_size=8, start=0, width
                 test_input[i, t, c] = note
         for n, note in enumerate(testing_next_interval[i]):
             test_target[i, n] = note
-
-    data = Data()
+    
+    if data is None:
+        data = Data()
     data.TestInput = test_input
     data.TestTarget = test_target
     data.TrainingInput = training_input
