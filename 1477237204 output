@@ -1,0 +1,954 @@
+mcallister@dralnu:~/Artificial-Music-Generation$ python ArtificialMusicGeneration.py 
+Using Theano backend.
+Using gpu device 0: GeForce GTX 1080 (CNMeM is enabled with initial size: 95.0% of memory, cuDNN 5105)
+/home/mcallister/.local/lib/python2.7/site-packages/theano/sandbox/cuda/__init__.py:600: UserWarning: Your cuDNN version is more recent than the one Theano officially supports. If you see any problems, try updating Theano or downgrading cuDNN to version 5.
+  warnings.warn(warn)
+Options are: 'midi' for midi-conversion, 'load [mode] [network]' to load a network (modes are -train and -test) and 'full' for a full training run
+Running in 'full' mode
+Starting up...
+Converting .Mid to .Txt...
+...Done convertring .Mid to .Txt
+
+Converting .Txt to .Mid...
+Converting 1477235298_Iteration_2_Seed_0 to .mid
+Converting 1477235298_Iteration_1_Seed_0 to .mid
+Converting 1477235298_Iteration_0_Seed_0 to .mid
+...Done convertring .Txt to .Mid
+
+Preparing Seed Data
+Loading Twinkle
+Building seed data...
+Resizing matricies...
+Preparing Training Data
+Loading sonate_01_(c)hisamori
+Loading sonate_02_(c)hisamori
+Loading sonate_03_(c)hisamori
+Loading sonate_04_(c)hisamori
+Loading sonate_05_(c)hisamori
+Loading sonate_06_(c)hisamori
+Loading sonate_07_(c)hisamori
+Loading sonate_08_(c)hisamori
+Loading sonate_09_(c)hisamori
+Loading sonate_10_(c)hisamori
+Loading sonate_11_(c)hisamori
+Loading sonate_12_(c)hisamori
+Loading sonate_13_(c)hisamori
+Loading sonate_14_(c)hisamori
+Loading sonate_15_(c)hisamori
+Loading sonate_16_(c)hisamori
+Loading sonate_17_(c)hisamori
+Loading sonate_18_(c)hisamori
+Loading sonate_19_(c)hisamori
+Loading sonate_20_(c)hisamori
+Loading sonate_21_(c)hisamori
+Loading sonate_22_(c)hisamori
+Loading sonate_23_(c)hisamori
+Loading sonate_24_(c)hisamori
+Loading sonate_25_(c)hisamori
+Loading sonate_26_(c)hisamori
+Loading sonate_27_(c)hisamori
+Loading sonate_28_(c)hisamori
+Loading sonate_29_(c)hisamori
+Loading sonate_30_(c)hisamori
+Loading sonate_31_(c)hisamori
+Loading sonate_32_(c)hisamori
+Loading sonata_1_1_(c)iscenko
+Loading sonata_1_2_(c)iscenko
+Loading sonata_1_3_(c)iscenko
+Loading sonata_1_4_(c)iscenko
+Loading sonata_2_1_(c)iscenko
+Loading sonata_2_2_(c)iscenko
+Loading sonata_2_3_(c)iscenko
+Loading sonata_3_1_(c)iscenko
+Loading sonata_3_2_(c)iscenko
+Loading sonata_3_3_(c)iscenko
+Loading sonata_4_1_(c)iscenko
+Loading sonata_4_2_(c)iscenko
+Loading sonata_4_3_(c)iscenko
+Loading sonata_5_1_(c)iscenko
+Loading sonata_5_2_(c)iscenko
+Loading sonata_5_3_(c)iscenko
+Loading sonata_6_1_(c)iscenko
+Loading sonata_6_2_(c)iscenko
+Loading sonata_6_3_(c)iscenko
+Loading sonata_7_1_(c)iscenko
+Loading sonata_7_2_(c)iscenko
+Loading sonata_7_3_(c)iscenko
+Loading sonata_8_1_(c)iscenko
+Loading sonata_8_2_(c)iscenko
+Loading sonata_8_3_(c)iscenko
+Loading sonata_9_1_(c)iscenko
+Loading sonata_9_2_(c)iscenko
+Loading sonata_10_1_(c)iscenko
+Loading sonata_10_2_(c)iscenko
+Loading sonata_10_3_(c)iscenko
+Loading sonata_11_1_(c)iscenko
+Loading sonata_11_2_(c)iscenko
+Loading sonata_11_3_(c)iscenko
+Loading sonata_12_1_(c)iscenko
+Loading sonata_12_2_(c)iscenko
+Loading sonata_12_3_(c)iscenko
+Loading sonata_13_1_(c)iscenko
+Loading sonata_13_2_(c)iscenko
+Loading sonata_13_3_(c)iscenko
+Loading sonata_13_4_(c)iscenko
+Loading sonata_14_1_(c)iscenko
+Loading sonata_14_2_(c)iscenko
+Loading sonata_14_3_(c)iscenko
+Loading sonata_15_2_(c)iscenko
+Loading sonata_15_3_(c)iscenko
+Loading sonata_16_1_(c)iscenko
+Loading sonata_16_2_(c)iscenko
+Loading sonata_16_3_(c)iscenko
+Loading sonata_17_1_(c)iscenko
+Loading sonata_17_2_(c)iscenko
+Loading sonata_17_3_(c)iscenko
+Loading sonata_18_1_(c)iscenko
+Loading sonata_18_2_(c)iscenko
+Loading sonata_18_3_(c)iscenko
+Loading sonata_19_1_(c)iscenko
+Loading sonata_19_2_(c)iscenko
+Loading sonata_20_1_(c)iscenko
+Loading sonata_20_2_(c)iscenko
+Loading sonata_21_1_(c)iscenko
+Loading sonata_21_2_(c)iscenko
+Loading sonata_21_3_(c)iscenko
+Loading sonata_22_1_(c)iscenko
+Loading sonata_22_2-3_(c)iscenko
+Loading sonata_23_1_(c)iscenko
+Loading sonata_23_2_(c)iscenko
+Loading sonata_24_1_(c)iscenko
+Loading sonata_24_2_(c)iscenko
+Loading sonata_24_3_(c)iscenko
+Loading sonata_25_1_(c)iscenko
+Loading sonata_25_2_(c)iscenko
+Loading sonata_25_3_(c)iscenko
+Loading sonata_26_1_(c)iscenko
+Loading sonata_26_2_(c)iscenko
+Loading sonata_28_1_(c)iscenko
+Loading sonata_28_2_(c)iscenko
+Loading sonata_29_1_(c)iscenko
+Loading sonata_29_2_(c)iscenko
+Loading sonata_29_3_(c)iscenko
+Loading sonata_30_1_(c)iscenko
+Loading sonata_30_2_(c)iscenko
+Loading sonata_30_3_(c)iscenko
+Loading sonata_31_1_(c)iscenko
+Loading sonata_31_2_(c)iscenko
+Loading sonata_31_3_(c)iscenko
+Loading sonata_32_1_(c)iscenko
+Loading sonata_32_2_(c)iscenko
+Loading sonata_33_1_(c)iscenko
+Loading sonata_33_2_(c)iscenko
+Loading sonata_33_3_(c)iscenko
+Loading sonata_34_1_(c)iscenko
+Loading sonata_34_2_(c)iscenko
+Loading sonata_35_1_(c)iscenko
+Loading sonata_35_2_(c)iscenko
+Loading sonata_35_3_(c)iscenko
+Loading sonata_36_1_(c)iscenko
+Loading sonata_36_2_(c)iscenko
+Loading sonata_36_3_(c)iscenko
+Loading sonata_37_1_(c)iscenko
+Loading sonata_37_2_(c)iscenko
+Loading sonata_37_3_(c)iscenko
+Loading sonata_38_1_(c)iscenko
+Loading sonata_38_2_(c)iscenko
+Loading sonata_38_3_(c)iscenko
+Loading sonata_39_1_(c)iscenko
+Loading sonata_39_2-3_(c)iscenko
+Loading sonata_40_1_(c)iscenko
+Loading sonata_40_2_(c)iscenko
+Loading sonata_41_1_(c)iscenko
+Loading sonata_41_2_(c)iscenko
+Loading sonata_41_3_(c)iscenko
+Loading sonata_42_1_(c)iscenko
+Loading sonata_42_2_(c)iscenko
+Loading sonata_42_3_(c)iscenko
+Loading sonata_44_2_(c)iscenko
+Loading sonata_44_3_(c)iscenko
+Loading sonata_45_(c)iscenko
+Loading sonata_46_1_(c)iscenko
+Loading sonata_46_2-3_(c)iscenko
+Loading sonata_47_1_(c)iscenko
+Loading sonata_47_2_(c)iscenko
+Loading sonata_47_3_(c)iscenko
+Loading sonata_48_1_(c)iscenko
+Loading sonata_48_2_(c)iscenko
+Loading sonata_48_3_(c)iscenko
+Loading sonata_49_1_(c)iscenko
+Loading sonata_49_2_(c)iscenko
+Loading sonata_49_3_(c)iscenko
+Loading sonata_50_1_(c)iscenko
+Loading sonata_50_2-3_(c)iscenko
+Loading sonata_51_1_(c)iscenko
+Loading sonata_51_2-3_(c)iscenko
+Loading sonata_52_1_(c)iscenko
+Loading sonata_52_2_(c)iscenko
+Loading sonata_52_3_(c)iscenko
+Loading sonata_53_1_(c)iscenko
+Loading sonata_53_2-3_(c)iscenko
+Loading sonata_54_1_(c)iscenko
+Loading sonata_54_2-3_(c)iscenko
+Loading sonata_55_1_(c)iscenko
+Loading sonata_55_2_(c)iscenko
+Loading sonata_56_1_(c)iscenko
+Loading sonata_57_1_(c)iscenko
+Loading sonata_57_2_(c)iscenko
+Loading sonata_58_1_(c)iscenko
+Loading sonata_58_2_(c)iscenko
+Loading sonata_59_1_(c)iscenko
+Loading sonata_59_2_(c)iscenko
+Loading sonata_59_3_(c)iscenko
+Loading sonata_60_1_(c)iscenko
+Loading sonata_60_2_(c)iscenko
+Loading sonata_60_3_(c)iscenko
+Loading sonata_61_1_(c)iscenko
+Loading sonata_61_2_(c)iscenko
+Loading sonata_62_1_(c)iscenko
+Loading sonata_62_2_(c)iscenko
+Loading sonata_62_3_(c)iscenko
+Loading piano_sonata_457_3_(c)oguri
+Loading piano_sonata_545_1_(c)oguri
+Loading piano_sonata_545_2_(c)oguri
+Loading piano_sonata_545_3_(c)oguri
+Loading piano_sonata_570_1_(c)oguri
+Loading piano_sonata_570_2_(c)oguri
+Loading piano_sonata_570_3_(c)oguri
+Loading piano_sonata_576_1_(c)oguri
+Loading piano_sonata_576_2_(c)oguri
+Loading piano_sonata_576_3_(c)oguri
+Loading piano_sonata_310_1_(c)oguri
+Loading piano_sonata_310_2_(c)oguri
+Loading piano_sonata_310_3_(c)oguri
+Loading piano_sonata_330_1_(c)oguri
+Loading piano_sonata_330_2_(c)oguri
+Loading piano_sonata_330_3_(c)oguri
+Loading piano_sonata_331_1_(c)oguri
+Loading piano_sonata_331_2_(c)oguri
+Loading piano_sonata_331_3_(c)oguri
+Loading piano_sonata_332_1_(c)oguri
+Loading piano_sonata_332_2_(c)oguri
+Loading piano_sonata_332_3_(c)oguri
+Loading piano_sonata_333_1_(c)oguri
+Loading piano_sonata_333_2_(c)oguri
+Loading piano_sonata_333_3_(c)oguri
+Loading piano_sonata_457_1_(c)oguri
+Loading piano_sonata_457_2_(c)oguri
+Loading nocturne_c_minor_(c)inoue
+Loading nocturne_c_sharp_minor_(c)inoue
+Loading nocturne_9_1_(c)unknown
+Loading nocturne_9_2_(c)unknown
+Loading nocturne_9_3_(c)unknown
+Loading nocturne_15_1_(c)unknown
+Loading nocturne_15_2_(c)unknown
+Loading nocturne_15_3_(c)unknown
+Loading nocturne_27_1_(c)inoue
+Loading nocturne_27_2_(c)inoue
+Loading nocturne_32_1_(c)unknown
+Loading nocturne_32_2_(c)unknown
+Loading nocturne_37_1_(c)unknown
+Loading nocturne_37_2_(c)unknown
+Loading nocturne_48_1_(c)unknown
+Loading nocturne_48_2_(c)unknown
+Loading nocturne_55_1_(c)unknown
+Loading nocturne_55_2_(c)unknown
+Loading nocturne_62_1_(c)inoue
+Loading nocturne_62_2_(c)unknown
+Loading nocturne_72_1_(c)unknown
+Loading kunst_der_fuge_0_(nc)mutopiaproject
+Loading kunst_der_fuge_1_(nc)mutopiaproject
+Loading kunst_der_fuge_2_(nc)mutopiaproject
+Loading kunst_der_fuge_3_(nc)mutopiaproject
+Loading kunst_der_fuge_4_(nc)mutopiaproject
+Loading kunst_der_fuge_5_(nc)mutopiaproject
+Loading kunst_der_fuge_6_(nc)mutopiaproject
+Loading kunst_der_fuge_7_(nc)mutopiaproject
+Loading kunst_der_fuge_8_(nc)mutopiaproject
+Loading kunst_der_fuge_9_(nc)mutopiaproject
+Loading kunst_der_fuge_10_(nc)mutopiaproject
+Loading kunst_der_fuge_11_(nc)mutopiaproject
+Loading kunst_der_fuge_12_(nc)mutopiaproject
+Loading kunst_der_fuge_13_(nc)mutopiaproject
+Loading kunst_der_fuge_14_(nc)mutopiaproject
+Loading kunst_der_fuge_15_(nc)mutopiaproject
+Loading kunst_der_fuge_16_(nc)mutopiaproject
+Loading kunst_der_fuge_17_(nc)mutopiaproject
+Loading kunst_der_fuge_18_(nc)mutopiaproject
+Loading kunst_der_fuge_19_(nc)mutopiaproject
+Loading toccatas_bwv-910_(c)sankey
+Loading toccatas_bwv-911_(c)sankey
+Loading toccatas_bwv-912_(c)sankey
+Loading toccatas_bwv-913_(c)sankey
+Loading toccatas_bwv-914_(c)sankey
+Loading toccatas_bwv-915_(c)sankey
+Loading toccatas_bwv-916_(c)sankey
+Loading bach_little_preludes_938_(c)simonetto
+Loading bach_little_preludes_939_(c)simonetto
+Loading bach_little_preludes_940_(c)simonetto
+Loading bach_little_preludes_941_(c)simonetto
+Loading bach_little_preludes_942_(c)simonetto
+Loading bach_little_preludes_943_(c)simonetto
+Loading bach_little_preludes_924_(c)simonetto
+Loading bach_little_preludes_925_(c)simonetto
+Loading bach_little_preludes_926_(c)simonetto
+Loading bach_little_preludes_927_(c)simonetto
+Loading bach_little_preludes_928_(c)simonetto
+Loading bach_little_preludes_929_(c)simonetto
+Loading bach_little_preludes_930_(c)simonetto
+Loading bach_little_preludes_933_(c)simonetto
+Loading bach_little_preludes_934_(c)simonetto
+Loading bach_little_preludes_935_(c)simonetto
+Loading bach_little_preludes_936_(c)simonetto
+Loading bach_little_preludes_937_(c)simonetto
+Loading tchaikovsky_seasons_1_(c)oguri
+Loading tchaikovsky_seasons_2_(c)oguri
+Loading tchaikovsky_seasons_3_(c)oguri
+Loading tchaikovsky_seasons_4_(c)oguri
+Loading tchaikovsky_seasons_5_(c)oguri
+Loading tchaikovsky_seasons_6_(c)oguri
+Loading tchaikovsky_seasons_7_(c)oguri
+Loading tchaikovsky_seasons_8_(c)oguri
+Loading tchaikovsky_seasons_9_(c)oguri
+Loading tchaikovsky_seasons_10_(c)oguri
+Loading tchaikovsky_seasons_11_(c)oguri
+Loading tchaikovsky_seasons_12_(c)oguri
+Loading tchaikovsky_six_pieces_19_1_reveries_du_soir_(c)yogore
+Loading tchaikovsky_six_pieces_19_2_scherzo_humoristique_(c)yogore
+Loading tchaikovsky_six_pieces_19_3_feuillet_dalbum_(c)yogore
+Loading tchaikovsky_six_pieces_19_4_nocturne_(c)yogore
+Loading tchaikovsky_six_pieces_19_5_capriccioso_(c)yogore
+Loading tchaikovsky_six_pieces_19_6_thema_und_variationen_(c)yogore
+Building training data...
+Resizing matricies...
+... Building subsets for song 0
+... Building subsets for song 1
+... Building subsets for song 2
+... Building subsets for song 3
+... Building subsets for song 4
+... Building subsets for song 5
+... Building subsets for song 6
+... Building subsets for song 7
+... Building subsets for song 8
+... Building subsets for song 9
+... Building subsets for song 10
+... Building subsets for song 11
+... Building subsets for song 12
+... Building subsets for song 13
+... Building subsets for song 14
+... Building subsets for song 15
+... Building subsets for song 16
+... Building subsets for song 17
+... Building subsets for song 18
+... Building subsets for song 19
+... Building subsets for song 20
+... Building subsets for song 21
+... Building subsets for song 22
+... Building subsets for song 23
+... Building subsets for song 24
+... Building subsets for song 25
+... Building subsets for song 26
+... Building subsets for song 27
+... Building subsets for song 28
+... Building subsets for song 29
+... Building subsets for song 30
+... Building subsets for song 31
+... Building subsets for song 32
+... Building subsets for song 33
+... Building subsets for song 34
+... Building subsets for song 35
+... Building subsets for song 36
+... Building subsets for song 37
+... Building subsets for song 38
+... Building subsets for song 39
+... Building subsets for song 40
+... Building subsets for song 41
+... Building subsets for song 42
+... Building subsets for song 43
+... Building subsets for song 44
+... Building subsets for song 45
+... Building subsets for song 46
+... Building subsets for song 47
+... Building subsets for song 48
+... Building subsets for song 49
+... Building subsets for song 50
+... Building subsets for song 51
+... Building subsets for song 52
+... Building subsets for song 53
+... Building subsets for song 54
+... Building subsets for song 55
+... Building subsets for song 56
+... Building subsets for song 57
+... Building subsets for song 58
+... Building subsets for song 59
+... Building subsets for song 60
+... Building subsets for song 61
+... Building subsets for song 62
+... Building subsets for song 63
+... Building subsets for song 64
+... Building subsets for song 65
+... Building subsets for song 66
+... Building subsets for song 67
+... Building subsets for song 68
+... Building subsets for song 69
+... Building subsets for song 70
+... Building subsets for song 71
+... Building subsets for song 72
+... Building subsets for song 73
+... Building subsets for song 74
+... Building subsets for song 75
+... Building subsets for song 76
+... Building subsets for song 77
+... Building subsets for song 78
+... Building subsets for song 79
+... Building subsets for song 80
+... Building subsets for song 81
+... Building subsets for song 82
+... Building subsets for song 83
+... Building subsets for song 84
+... Building subsets for song 85
+... Building subsets for song 86
+... Building subsets for song 87
+... Building subsets for song 88
+... Building subsets for song 89
+... Building subsets for song 90
+... Building subsets for song 91
+... Building subsets for song 92
+... Building subsets for song 93
+... Building subsets for song 94
+... Building subsets for song 95
+... Building subsets for song 96
+... Building subsets for song 97
+... Building subsets for song 98
+... Building subsets for song 99
+... Building subsets for song 100
+... Building subsets for song 101
+... Building subsets for song 102
+... Building subsets for song 103
+... Building subsets for song 104
+... Building subsets for song 105
+... Building subsets for song 106
+... Building subsets for song 107
+... Building subsets for song 108
+... Building subsets for song 109
+... Building subsets for song 110
+... Building subsets for song 111
+... Building subsets for song 112
+... Building subsets for song 113
+... Building subsets for song 114
+... Building subsets for song 115
+... Building subsets for song 116
+... Building subsets for song 117
+... Building subsets for song 118
+... Building subsets for song 119
+... Building subsets for song 120
+... Building subsets for song 121
+... Building subsets for song 122
+... Building subsets for song 123
+... Building subsets for song 124
+... Building subsets for song 125
+... Building subsets for song 126
+... Building subsets for song 127
+... Building subsets for song 128
+... Building subsets for song 129
+... Building subsets for song 130
+... Building subsets for song 131
+... Building subsets for song 132
+... Building subsets for song 133
+... Building subsets for song 134
+... Building subsets for song 135
+... Building subsets for song 136
+... Building subsets for song 137
+... Building subsets for song 138
+... Building subsets for song 139
+... Building subsets for song 140
+... Building subsets for song 141
+... Building subsets for song 142
+... Building subsets for song 143
+... Building subsets for song 144
+... Building subsets for song 145
+... Building subsets for song 146
+... Building subsets for song 147
+... Building subsets for song 148
+... Building subsets for song 149
+... Building subsets for song 150
+... Building subsets for song 151
+... Building subsets for song 152
+... Building subsets for song 153
+... Building subsets for song 154
+... Building subsets for song 155
+... Building subsets for song 156
+... Building subsets for song 157
+... Building subsets for song 158
+... Building subsets for song 159
+... Building subsets for song 160
+... Building subsets for song 161
+... Building subsets for song 162
+... Building subsets for song 163
+... Building subsets for song 164
+... Building subsets for song 165
+... Building subsets for song 166
+... Building subsets for song 167
+... Building subsets for song 168
+... Building subsets for song 169
+... Building subsets for song 170
+... Building subsets for song 171
+... Building subsets for song 172
+... Building subsets for song 173
+... Building subsets for song 174
+... Building subsets for song 175
+... Building subsets for song 176
+... Building subsets for song 177
+... Building subsets for song 178
+... Building subsets for song 179
+... Building subsets for song 180
+... Building subsets for song 181
+... Building subsets for song 182
+... Building subsets for song 183
+... Building subsets for song 184
+... Building subsets for song 185
+... Building subsets for song 186
+... Building subsets for song 187
+... Building subsets for song 188
+... Building subsets for song 189
+... Building subsets for song 190
+... Building subsets for song 191
+... Building subsets for song 192
+... Building subsets for song 193
+... Building subsets for song 194
+... Building subsets for song 195
+... Building subsets for song 196
+... Building subsets for song 197
+... Building subsets for song 198
+... Building subsets for song 199
+... Building subsets for song 200
+... Building subsets for song 201
+... Building subsets for song 202
+... Building subsets for song 203
+... Building subsets for song 204
+... Building subsets for song 205
+... Building subsets for song 206
+... Building subsets for song 207
+... Building subsets for song 208
+... Building subsets for song 209
+... Building subsets for song 210
+... Building subsets for song 211
+... Building subsets for song 212
+... Building subsets for song 213
+... Building subsets for song 214
+... Building subsets for song 215
+... Building subsets for song 216
+... Building subsets for song 217
+... Building subsets for song 218
+... Building subsets for song 219
+... Building subsets for song 220
+... Building subsets for song 221
+... Building subsets for song 222
+... Building subsets for song 223
+... Building subsets for song 224
+... Building subsets for song 225
+... Building subsets for song 226
+... Building subsets for song 227
+... Building subsets for song 228
+... Building subsets for song 229
+... Building subsets for song 230
+... Building subsets for song 231
+... Building subsets for song 232
+... Building subsets for song 233
+... Building subsets for song 234
+... Building subsets for song 235
+... Building subsets for song 236
+... Building subsets for song 237
+... Building subsets for song 238
+... Building subsets for song 239
+... Building subsets for song 240
+... Building subsets for song 241
+... Building subsets for song 242
+... Building subsets for song 243
+... Building subsets for song 244
+... Building subsets for song 245
+... Building subsets for song 246
+... Building subsets for song 247
+... Building subsets for song 248
+... Building subsets for song 249
+... Building subsets for song 250
+... Building subsets for song 251
+... Building subsets for song 252
+... Building subsets for song 253
+... Building subsets for song 254
+... Building subsets for song 255
+... Building subsets for song 256
+... Building subsets for song 257
+... Building subsets for song 258
+... Building subsets for song 259
+... Building subsets for song 260
+... Building subsets for song 261
+... Building subsets for song 262
+... Building subsets for song 263
+... Building subsets for song 264
+... Building subsets for song 265
+... Building subsets for song 266
+... Building subsets for song 267
+... Building subsets for song 268
+... Building subsets for song 269
+... Building subsets for song 270
+... Building subsets for song 271
+... Building subsets for song 272
+... Building subsets for song 273
+... Building subsets for song 274
+... Building subsets for song 275
+... Building subsets for song 276
+... Building subsets for song 277
+... Building subsets for song 278
+... Building subsets for song 279
+... Building subsets for song 280
+... Building subsets for song 281
+... Building subsets for song 282
+... Building subsets for song 283
+... Building subsets for song 284
+... Building subsets for song 285
+... Building subsets for song 286
+... Building subsets for song 287
+... Building subsets for song 288
+... Building subsets for song 289
+... Building subsets for song 290
+... Building subsets for song 291
+... Building subsets for song 292
+... Building subsets for song 293
+... Building subsets for song 294
+... Building subsets for song 295
+... Building subsets for song 296
+... Building subsets for song 297
+... Building subsets for song 298
+Vectorizing training data...
+Vectorizing testing data...
+Building network...
+Starting training...
+
+... Iteration=1
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 358s - loss: 1.9507 - acc: 0.4109 - val_loss: 1.6963 - val_acc: 0.4677
+
+... Iteration=2
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 359s - loss: 1.6041 - acc: 0.4840 - val_loss: 1.5337 - val_acc: 0.5027
+
+... Iteration=3
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 359s - loss: 1.4953 - acc: 0.5112 - val_loss: 1.4592 - val_acc: 0.5224
+
+... Iteration=4
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 359s - loss: 1.4188 - acc: 0.5302 - val_loss: 1.4018 - val_acc: 0.5389
+
+... Iteration=5
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 360s - loss: 1.3521 - acc: 0.5471 - val_loss: 1.3568 - val_acc: 0.5509
+
+... Iteration=6
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 360s - loss: 1.2894 - acc: 0.5618 - val_loss: 1.3214 - val_acc: 0.5622
+
+... Iteration=7
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 360s - loss: 1.2310 - acc: 0.5767 - val_loss: 1.2865 - val_acc: 0.5717
+
+... Iteration=8
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 360s - loss: 1.1748 - acc: 0.5910 - val_loss: 1.2627 - val_acc: 0.5787
+
+... Iteration=9
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 360s - loss: 1.1229 - acc: 0.6040 - val_loss: 1.2423 - val_acc: 0.5858
+
+... Iteration=10
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 360s - loss: 1.0750 - acc: 0.6163 - val_loss: 1.2150 - val_acc: 0.5943
+
+... Iteration=11
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 361s - loss: 1.0303 - acc: 0.6274 - val_loss: 1.1993 - val_acc: 0.5995
+
+... Iteration=12
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 361s - loss: 0.9881 - acc: 0.6389 - val_loss: 1.1776 - val_acc: 0.6072
+
+... Iteration=13
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 361s - loss: 0.9512 - acc: 0.6489 - val_loss: 1.1721 - val_acc: 0.6128
+
+... Iteration=14
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 361s - loss: 0.9158 - acc: 0.6577 - val_loss: 1.1578 - val_acc: 0.6162
+
+... Iteration=15
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 361s - loss: 0.8828 - acc: 0.6669 - val_loss: 1.1474 - val_acc: 0.6210
+
+... Iteration=16
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 361s - loss: 0.8536 - acc: 0.6739 - val_loss: 1.1336 - val_acc: 0.6266
+
+... Iteration=17
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 361s - loss: 0.8272 - acc: 0.6814 - val_loss: 1.1308 - val_acc: 0.6305
+
+... Iteration=18
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 361s - loss: 0.8003 - acc: 0.6889 - val_loss: 1.1212 - val_acc: 0.6340
+
+... Iteration=19
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 361s - loss: 0.7761 - acc: 0.6947 - val_loss: 1.1195 - val_acc: 0.6369
+
+... Iteration=20
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 361s - loss: 0.7542 - acc: 0.7014 - val_loss: 1.1138 - val_acc: 0.6411
+
+... Iteration=21
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 361s - loss: 0.7327 - acc: 0.7069 - val_loss: 1.1089 - val_acc: 0.6428
+
+... Iteration=22
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 361s - loss: 0.7139 - acc: 0.7126 - val_loss: 1.1054 - val_acc: 0.6466
+
+... Iteration=23
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 362s - loss: 0.6956 - acc: 0.7171 - val_loss: 1.1038 - val_acc: 0.6492
+
+... Iteration=24
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 362s - loss: 0.6779 - acc: 0.7220 - val_loss: 1.0982 - val_acc: 0.6517
+
+... Iteration=25
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 362s - loss: 0.6608 - acc: 0.7269 - val_loss: 1.0971 - val_acc: 0.6536
+
+... Iteration=26
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 362s - loss: 0.6472 - acc: 0.7306 - val_loss: 1.0951 - val_acc: 0.6552
+
+... Iteration=27
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 361s - loss: 0.6330 - acc: 0.7344 - val_loss: 1.0888 - val_acc: 0.6573
+
+... Iteration=28
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 361s - loss: 0.6208 - acc: 0.7373 - val_loss: 1.0906 - val_acc: 0.6593
+
+... Iteration=29
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 362s - loss: 0.6077 - acc: 0.7417 - val_loss: 1.0881 - val_acc: 0.6622
+
+... Iteration=30
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 362s - loss: 0.5957 - acc: 0.7444 - val_loss: 1.0908 - val_acc: 0.6634
+
+... Iteration=31
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 362s - loss: 0.5843 - acc: 0.7473 - val_loss: 1.0892 - val_acc: 0.6650
+
+... Iteration=32
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 362s - loss: 0.5729 - acc: 0.7510 - val_loss: 1.0901 - val_acc: 0.6654
+
+... Iteration=33
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 362s - loss: 0.5644 - acc: 0.7533 - val_loss: 1.0843 - val_acc: 0.6683
+
+... Iteration=34
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 362s - loss: 0.5555 - acc: 0.7558 - val_loss: 1.0904 - val_acc: 0.6698
+
+... Iteration=35
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 363s - loss: 0.5472 - acc: 0.7582 - val_loss: 1.0882 - val_acc: 0.6716
+
+... Iteration=36
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 364s - loss: 0.5390 - acc: 0.7607 - val_loss: 1.0855 - val_acc: 0.6732
+
+... Iteration=37
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 364s - loss: 0.5321 - acc: 0.7622 - val_loss: 1.0852 - val_acc: 0.6739
+
+... Iteration=38
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 364s - loss: 0.5248 - acc: 0.7642 - val_loss: 1.0890 - val_acc: 0.6743
+
+... Iteration=39
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 364s - loss: 0.5167 - acc: 0.7664 - val_loss: 1.0899 - val_acc: 0.6749
+
+... Iteration=40
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 364s - loss: 0.5126 - acc: 0.7677 - val_loss: 1.0872 - val_acc: 0.6764
+
+... Iteration=41
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 365s - loss: 0.5056 - acc: 0.7693 - val_loss: 1.0866 - val_acc: 0.6772
+
+... Iteration=42
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 366s - loss: 0.4997 - acc: 0.7714 - val_loss: 1.0879 - val_acc: 0.6773
+
+... Iteration=43
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 366s - loss: 0.4934 - acc: 0.7733 - val_loss: 1.0890 - val_acc: 0.6779
+
+... Iteration=44
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 366s - loss: 0.4901 - acc: 0.7740 - val_loss: 1.0863 - val_acc: 0.6785
+
+... Iteration=45
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 366s - loss: 0.4851 - acc: 0.7755 - val_loss: 1.0915 - val_acc: 0.6796
+
+... Iteration=46
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 366s - loss: 0.4805 - acc: 0.7773 - val_loss: 1.0919 - val_acc: 0.6796
+
+... Iteration=47
+Train on 650718 samples, validate on 72464 samples
+Epoch 1/1
+650718/650718 [==============================] - 366s - loss: 0.4771 - acc: 0.7773 - val_loss: 1.0941 - val_acc: 0.6799
+^CTraceback (most recent call last):
+  File "ArtificialMusicGeneration.py", line 141, in <module>
+    full_run(iterations=200, callbacks=[learning_rate_callback, early_stoping_callback], learning_rate=.001, train_dataset=DataSets.full_data, history_length=16*4)
+  File "ArtificialMusicGeneration.py", line 106, in full_run
+    interval_width=88, history_length=history_length, identifier=identifier, generation_length=generation_length, iterations=iterations)
+  File "ArtificialMusicGeneration.py", line 61, in train_network
+    song = Networks.test_melody_network(model, seed, generation_length, interval_width, history_length)
+  File "/home/mcallister/Artificial-Music-Generation/Networks.py", line 167, in test_melody_network
+    prediction = model.predict(test_sequence)[0]
+  File "/home/mcallister/.local/lib/python2.7/site-packages/keras/models.py", line 671, in predict
+    return self.model.predict(x, batch_size=batch_size, verbose=verbose)
+  File "/home/mcallister/.local/lib/python2.7/site-packages/keras/engine/training.py", line 1179, in predict
+    batch_size=batch_size, verbose=verbose)
+  File "/home/mcallister/.local/lib/python2.7/site-packages/keras/engine/training.py", line 878, in _predict_loop
+    batch_outs = f(ins_batch)
+  File "/home/mcallister/.local/lib/python2.7/site-packages/keras/backend/theano_backend.py", line 717, in __call__
+    return self.function(*inputs)
+  File "/home/mcallister/.local/lib/python2.7/site-packages/theano/compile/function_module.py", line 859, in __call__
+    outputs = self.fn()
+  File "/home/mcallister/.local/lib/python2.7/site-packages/theano/scan_module/scan_op.py", line 951, in rval
+    r = p(n, [x[0] for x in i], o)
+  File "/home/mcallister/.local/lib/python2.7/site-packages/theano/scan_module/scan_op.py", line 940, in <lambda>
+    self, node)
+KeyboardInterrupt
+^CError in atexit._run_exitfuncs:
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/atexit.py", line 24, in _run_exitfuncs
+    func(*targs, **kargs)
+KeyboardInterrupt
+Error in sys.exitfunc:
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/atexit.py", line 24, in _run_exitfuncs
+    func(*targs, **kargs)
+KeyboardInterrupt
+mcallister@dralnu:~/Artificial-Music-Generation$ python ArtificialMusicGeneration.py midi
+Using Theano backend.
+Using gpu device 0: GeForce GTX 1080 (CNMeM is enabled with initial size: 95.0% of memory, cuDNN 5105)
+/home/mcallister/.local/lib/python2.7/site-packages/theano/sandbox/cuda/__init__.py:600: UserWarning: Your cuDNN version is more recent than the one Theano officially supports. If you see any problems, try updating Theano or downgrading cuDNN to version 5.
+  warnings.warn(warn)
+Converting .Mid to .Txt...
+...Done convertring .Mid to .Txt
+
+Converting .Txt to .Mid...
+Converting 1477237204_Iteration_20_Seed_0 to .mid
+Converting 1477237204_Iteration_40_Seed_0 to .mid
+Converting 1477237204_Iteration_43_Seed_0 to .mid
+Converting 1477237204_Iteration_16_Seed_0 to .mid
+Converting 1477237204_Iteration_2_Seed_0 to .mid
+Converting 1477237204_Iteration_19_Seed_0 to .mid
+Converting 1477237204_Iteration_28_Seed_0 to .mid
+Converting 1477237204_Iteration_26_Seed_0 to .mid
+Converting 1477237204_Iteration_27_Seed_0 to .mid
+Converting 1477237204_Iteration_12_Seed_0 to .mid
+Converting 1477237204_Iteration_21_Seed_0 to .mid
+Converting 1477237204_Iteration_11_Seed_0 to .mid
+Converting 1477237204_Iteration_46_Seed_0 to .mid
+Converting 1477237204_Iteration_5_Seed_0 to .mid
+Converting 1477237204_Iteration_15_Seed_0 to .mid
+Converting 1477237204_Iteration_30_Seed_0 to .mid
+Converting 1477237204_Iteration_35_Seed_0 to .mid
+Converting 1477237204_Iteration_38_Seed_0 to .mid
+Converting 1477237204_Iteration_10_Seed_0 to .mid
+Converting 1477237204_Iteration_14_Seed_0 to .mid
+Converting 1477237204_Iteration_33_Seed_0 to .mid
+Converting 1477237204_Iteration_4_Seed_0 to .mid
+Converting 1477237204_Iteration_31_Seed_0 to .mid
+Converting 1477237204_Iteration_3_Seed_0 to .mid
+Converting 1477237204_Iteration_7_Seed_0 to .mid
+Converting 1477237204_Iteration_1_Seed_0 to .mid
+Converting 1477237204_Iteration_25_Seed_0 to .mid
+Converting 1477237204_Iteration_0_Seed_0 to .mid
+Converting 1477237204_Iteration_17_Seed_0 to .mid
+Converting 1477237204_Iteration_6_Seed_0 to .mid
+Converting 1477237204_Iteration_44_Seed_0 to .mid
+Converting 1477237204_Iteration_36_Seed_0 to .mid
+Converting 1477237204_Iteration_45_Seed_0 to .mid
+Converting 1477237204_Iteration_23_Seed_0 to .mid
+Converting 1477237204_Iteration_24_Seed_0 to .mid
+Converting 1477237204_Iteration_37_Seed_0 to .mid
+Converting 1477237204_Iteration_29_Seed_0 to .mid
+Converting 1477237204_Iteration_13_Seed_0 to .mid
+Converting 1477237204_Iteration_42_Seed_0 to .mid
+Converting 1477237204_Iteration_18_Seed_0 to .mid
+Converting 1477237204_Iteration_41_Seed_0 to .mid
+Converting 1477237204_Iteration_34_Seed_0 to .mid
+Converting 1477237204_Iteration_39_Seed_0 to .mid
+Converting 1477237204_Iteration_32_Seed_0 to .mid
+Converting 1477237204_Iteration_8_Seed_0 to .mid
+Converting 1477237204_Iteration_22_Seed_0 to .mid
+Converting 1477237204_Iteration_9_Seed_0 to .mid
+...Done convertring .Txt to .Mid
+
+

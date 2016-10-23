@@ -55,7 +55,7 @@ def train_network(model, data, epochs=1, callbacks=[], batch_size=512, interval_
         model = Networks.train_network(model, train_inputs=data.TrainingInput, train_targets=data.TrainingTarget, 
                                        val_inputs=data.TestInput, val_targets=data.TestTarget,
                                        epochs=epochs, callbacks=callbacks, batch_size=batch_size)
-            
+
         # make sample songs and save them
         for seedcount, seed in enumerate(data.SeedInput):
             song = Networks.test_melody_network(model, seed, generation_length, interval_width, history_length)
@@ -134,7 +134,7 @@ if __name__ == "__main__":
             print("Empty field for 'network'.")
     else: # do a full run
         def learning_schedule(lr):
-            return lr * .93
+            return lr * .94
 
         learning_rate_callback = Networks.LearningRateCallback(learning_schedule)
         early_stoping_callback = callbacks.EarlyStopping(patience=1)
