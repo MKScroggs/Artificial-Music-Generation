@@ -225,7 +225,9 @@ def get_above_percent(prediction, interval_width, percent=.7):
 
 
 def sample(predictions, interval_width, temperature=0.5):
-    # helper function to sample an index from a probability array, modified from keras lstm example
+    # reduce the input to the top 5 notes, to allow for some randomness, but prevent unwanted mulit-octave jumps
+    predictions = get_top_n(predictions, interval_width, n=5)
+    # helper function to sample an index from a probability array, from keras lstm example
     predictions = np.asarray(predictions).astype('float64')
     predictions = np.log(predictions) / temperature
     exp_predictions = np.exp(predictions)

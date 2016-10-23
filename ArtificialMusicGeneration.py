@@ -40,9 +40,16 @@ def train_network(model, data, epochs=1, callbacks=[], batch_size=512, interval_
                   identifier="MISSING_IDENTIFIER", generation_length=1000, iterations=100):
     generated_dir = os.path.dirname(os.path.realpath(__file__)) + "/Txt/" + identifier
     network_dir = os.path.dirname(os.path.realpath(__file__)) + "/Networks/" + identifier
+
+    # make a song to show randomized state (or start state if loaded from prior network)
+    for seedcount, seed in enumerate(data.SeedInput):
+        song = Networks.test_melody_network(model, seed, generation_length, interval_width, history_length)
+        Processing.simple_nparray_to_txt(song, generated_dir + "_Iteration_0_Seed_{}".format(seedcount), identifier + "_Iteration_0")
+
+    # Start training
     for i in range(iterations):
         # if we haven't stopped learning
-        print("\n... Iteration={0}".format(i))
+        print("\n... Iteration={0}".format(i + 1))
 
         # train the model
         model = Networks.train_network(model, train_inputs=data.TrainingInput, train_targets=data.TrainingTarget, 
@@ -52,10 +59,10 @@ def train_network(model, data, epochs=1, callbacks=[], batch_size=512, interval_
         # make sample songs and save them
         for seedcount, seed in enumerate(data.SeedInput):
             song = Networks.test_melody_network(model, seed, generation_length, interval_width, history_length)
-            Processing.simple_nparray_to_txt(song, generated_dir + "_Iteration_{}_Seed_{}".format(i, seedcount), identifier + "_Iteration_{}".format(i))
+            Processing.simple_nparray_to_txt(song, generated_dir + "_Iteration_{}_Seed_{}".format(i + 1, seedcount), identifier + "_Iteration_{}".format(i + 1))
             
         # save the network for reuse
-        model.save(network_dir + "_Iteration_{}.h5".format(i))
+        model.save(network_dir + "_Iteration_{}.h5".format(i + 1))
         
         # if a callback has set stop training, then stop iterating
         if model.stop_training is True:

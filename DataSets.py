@@ -342,4 +342,4 @@ tchaikovsy = [
 
 sonatas = beethoven_sonatas + mozart_sonatas + haydn_sonatas
 
-full_data = beethoven_sonatas + chopin_nocturnes + mozart_sonatas + bach_fuges + bach_little_preludes + bach_toccatas + haydn_sonatas + tchaikovsy
+full_data = beethoven_sonatas + haydn_sonatas + mozart_sonatas + chopin_nocturnes + bach_fuges + bach_toccatas #+ bach_little_preludes + tchaikovsy
