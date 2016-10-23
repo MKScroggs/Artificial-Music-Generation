@@ -224,7 +224,7 @@ def get_above_percent(prediction, interval_width, percent=.7):
     return predicted_matrix
 
 
-def sample(predictions, interval_width, temperature=1.0):
+def sample(predictions, interval_width, temperature=0.5):
     # helper function to sample an index from a probability array, modified from keras lstm example
     predictions = np.asarray(predictions).astype('float64')
     predictions = np.log(predictions) / temperature
