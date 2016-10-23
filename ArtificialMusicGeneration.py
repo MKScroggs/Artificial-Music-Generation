@@ -58,8 +58,10 @@ def train_network(model, data, epochs=1, callbacks=[], batch_size=512, interval_
 
         # make sample songs and save them
         for seedcount, seed in enumerate(data.SeedInput):
-            song = Networks.test_melody_network(model, seed, generation_length, interval_width, history_length)
-            Processing.simple_nparray_to_txt(song, generated_dir + "_Iteration_{}_Seed_{}".format(i + 1, seedcount), identifier + "_Iteration_{}".format(i + 1))
+            for temperature in [.25, .5, 1, 1.5]:
+                for count in [2, 4, 8, 16]:
+                    song = Networks.test_melody_network(model, seed, generation_length, interval_width, history_length, temperature, count)
+                    Processing.simple_nparray_to_txt(song, generated_dir + "_Iteration_{}_Temp_{}_Count_[]".format(i + 1, temperature, count), identifier + "_Iteration_{}".format(i + 1))
             
         # save the network for reuse
         model.save(network_dir + "_Iteration_{}.h5".format(i + 1))
@@ -137,5 +139,5 @@ if __name__ == "__main__":
             return lr * .94
 
         learning_rate_callback = Networks.LearningRateCallback(learning_schedule)
-        early_stoping_callback = callbacks.EarlyStopping(patience=1)
-        full_run(iterations=200, callbacks=[learning_rate_callback, early_stoping_callback], learning_rate=.001, train_dataset=DataSets.full_data, history_length=16*4)
+        early_stoping_callback = callbacks.EarlyStopping(patience=0, verbose=1)
+        full_run(iterations=50, epochs=2, callbacks=[learning_rate_callback, early_stoping_callback], learning_rate=.001, train_dataset=DataSets.seed, history_length=16*3)

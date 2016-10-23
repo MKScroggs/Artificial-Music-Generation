@@ -155,7 +155,7 @@ def train_network(model, train_inputs, train_targets, val_inputs, val_targets, e
     model.fit(train_inputs, train_targets, nb_epoch=epochs, callbacks=callbacks, batch_size=batch_size, validation_data=(val_inputs, val_targets))
     return model
 
-def test_melody_network(model, seed_sequence, sequence_length, interval_width, history_length):
+def test_melody_network(model, seed_sequence, sequence_length, interval_width, history_length, temperature=1, count=8):
     generated_sequence = seed_sequence
     for i in range(sequence_length):
         # make a window into the generated sequence that is of the proper length
@@ -167,7 +167,7 @@ def test_melody_network(model, seed_sequence, sequence_length, interval_width, h
         prediction = model.predict(test_sequence)[0]
 
         # pick the best note
-        predicted_matrix = sample(prediction, interval_width, temperature=1)
+        predicted_matrix = sample(prediction, interval_width, temperature=temperature, count=count)
         generated_sequence = np.append(generated_sequence, predicted_matrix, 1)
 
     return generated_sequence
@@ -224,7 +224,7 @@ def get_above_percent(prediction, interval_width, percent=.7):
     return predicted_matrix
 
 
-def sample(prediction, interval_width, temperature=0.5):
+def sample(prediction, interval_width, temperature=0.5, count=8):
     # reduce the input to the top 5 notes, to allow for some randomness, but prevent unwanted mulit-octave jumps
     indeces = np.argpartition(prediction, -5)[-5:]
     predicted_matrix = np.zeros(interval_width)
