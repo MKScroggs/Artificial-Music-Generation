@@ -37,7 +37,7 @@ def load_existing_network(file_name):
 
 
 def train_network(model, data, epochs=1, callbacks=[], batch_size=512, interval_width=88, history_length=16, 
-                  identifier="MISSING_IDENTIFIER", generation_length=1000, iterations=100):
+                  identifier="MISSING_IDENTIFIER", generation_length=1600, iterations=100):
     generated_dir = os.path.dirname(os.path.realpath(__file__)) + "/Txt/" + identifier
     network_dir = os.path.dirname(os.path.realpath(__file__)) + "/Networks/" + identifier
 
@@ -58,9 +58,9 @@ def train_network(model, data, epochs=1, callbacks=[], batch_size=512, interval_
 
         # make sample songs and save them
         for seedcount, seed in enumerate(data.SeedInput):
-            for temperature in [1, 1.1, 1.2, 1.3]:
-                song = Networks.test_melody_network(model, seed, generation_length, interval_width, history_length, temperature, 5)
-                Processing.simple_nparray_to_txt(song, generated_dir + "_Iteration_{}_Temp_{}_Count_{}".format(i + 1, temperature, 5), identifier + "_Iteration_{}".format(i + 1))
+            for temperature in [1]:
+                song = Networks.test_melody_network(model, seed, generation_length, interval_width, history_length, temperature, 3)
+                Processing.simple_nparray_to_txt(song, generated_dir + "_Iteration_{}_Seed_{}_Temp_{}_Count_{}".format(i + 1, seedcount, temperature, 5), identifier + "_Iteration_{}".format(i + 1))
             
         # save the network for reuse
         model.save(network_dir + "_Iteration_{}.h5".format(i + 1))
@@ -135,8 +135,8 @@ if __name__ == "__main__":
             print("Empty field for 'network'.")
     else: # do a full run
         def learning_schedule(lr):
-            return lr * .94
+            return lr * .95
 
         learning_rate_callback = Networks.LearningRateCallback(learning_schedule)
         # early_stoping_callback = callbacks.EarlyStopping(patience=0, verbose=1)
-        full_run(iterations=50, epochs=1, callbacks=[learning_rate_callback], learning_rate=.001, train_dataset=DataSets.full_data, history_length=16*4)
+        full_run(shape=[512,512], epochs=1, iterations=25, callbacks=[learning_rate_callback], learning_rate=.001, train_dataset=DataSets.sonatas, seed_dataset=["minor_seed"], history_length=16*6, loss="mse", activation="linear")
