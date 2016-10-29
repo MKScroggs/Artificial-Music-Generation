@@ -108,12 +108,21 @@ def full_run(learning_rate=.01, loss="categorical_crossentropy", activation="sof
     
     close()
 
+def test_network(model, identifier, interval_width=88, history_length=96, seed_dataset=DataSets.seed, generation_length=10000, count = 3):
+    generated_dir = os.path.dirname(os.path.realpath(__file__)) + "/Txt/" + identifier
+    data = Processing.Data()
+    data = get_seed_data(data=data, history_length=history_length, data_sets=seed_dataset)
+    for seedcount, seed in enumerate(data.SeedInput):
+        for temperature in [0.5, 0.75, 0.875, 1, 1.25, 1.5, 2]:
+            print("Generating for seed:{} and temp:{}".format(seedcount, temperature))
+            song = Networks.test_melody_network(model, seed, generation_length, interval_width, history_length, temperature, count)
+            Processing.simple_nparray_to_txt(song, generated_dir + "{}_Seed_{}_Temp_{}_Count_{}".format(identifier, seedcount, temperature, count), identifier)
 
 if __name__ == "__main__":
     try:
         arg = sys.argv[1]
     except:
-        print("Options are: 'midi' for midi-conversion, 'load [mode] [network]' to load a network (modes are -train and -test) and 'full' for a full training run")
+        print("Options are: 'midi' for midi-conversion, 'load [mode] [network]' to load a network (modes are -view and -test) and 'full' for a full training run")
         print("Running in 'full' mode")
         arg = "full"
 
@@ -125,18 +134,28 @@ if __name__ == "__main__":
         target = None
         try:
             mode = sys.argv[2]
-            if mode != "-train" and mode != "-test":
+            if mode != "-test" and mode != "-view":
                 raise Exception()
         except:
             print("Invalid or empty field for 'mode'.")
+            raise Exception()
         try:
-            target = sys.argv[3]
+            target = "Networks/" + sys.argv[3]
         except:
             print("Empty field for 'network'.")
+            raise Exception()
+        if mode == "-view":
+            Networks.view_network(Networks.get_network_from_file(target))
+        elif mode == "-test":
+            model = Networks.get_network_from_file(target)
+            test_network(model, "Test_of_{}".format(sys.argv[3]), seed_dataset=["minor_seed", "major_seed", "Twinkle"])
+        else:
+            raise Exception()
     else: # do a full run
         def learning_schedule(lr):
             return lr * .95
 
         learning_rate_callback = Networks.LearningRateCallback(learning_schedule)
         # early_stoping_callback = callbacks.EarlyStopping(patience=0, verbose=1)
-        full_run(shape=[512,512], epochs=1, iterations=25, callbacks=[learning_rate_callback], learning_rate=.001, train_dataset=DataSets.sonatas, seed_dataset=["minor_seed"], history_length=16*6, loss="mse", activation="linear")
+        full_run(shape=[512,512], epochs=1, iterations=25, callbacks=[learning_rate_callback], learning_rate=.001, train_dataset=DataSets.sonatas, seed_dataset=["minor_seed"], history_length=16*6, loss="categorical_crossentropy", activation="softmax")
+

@@ -21,6 +21,21 @@ class LearningRateCallback(Callback):
         new_lr = self.update(backend.get_value(self.model.optimizer.lr))
         backend.set_value(self.model.optimizer.lr, new_lr)
 
+def view_network(model):
+    for i, layer in enumerate(model.layers):
+        config = layer.get_config()
+        print("\nLayer: {}".format(i+1))
+        for j, k in config.items():
+            if j in ['name', 'input_dim', 'output_dim', 'activation', 'p']:
+                print("{}: {}".format(j, k))
+    print("")    
+    print("Optimizer: {}".format(type(model.optimizer).__name__))
+    print("Loss: {}".format(model.loss))
+    print("Current Learning Rate: {}".format(backend.get_value(model.optimizer.lr)))
+    print("History Length: {}".format(model.layers[0].get_config().get("batch_input_shape")[1]))
+    
+
+
 '''
 class LearningRateCallback(Callback):
     def __init__(self, update, verbose=False, monitor='loss', patience=0, stop=3):
