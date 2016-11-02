@@ -218,6 +218,6 @@ if __name__ == "__main__":
                             history_length=16*6, loss="categorical_crossentropy", activation="softmax")
         else:
             full_accompaniment_run(shape=[256,256], epochs=1, iterations=25, callbacks=[learning_rate_callback], 
-                                   learning_rate=.001, train_dataset=DataSets.sonatas, seed_dataset=DataSets.small_melody_seed,
+                                   learning_rate=.001, train_dataset=DataSets.simple_scales, seed_dataset=DataSets.small_melody_seed,
                                    history_length=int(16*.5), loss="mse", activation="sigmoid")
         

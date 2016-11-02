@@ -206,7 +206,7 @@ def test_accompaniment_network(model, seed_sequence, interval_width, history_len
         
         for n, note in enumerate(predicted_matrix[0][0]):
             if note == 1:
-                generated_sequence[0][i + history_length][k] = 1 #add the predicted notes
+                generated_sequence[0][i + history_length][n] = 1 #add the predicted notes
 
 
     return generated_sequence
