@@ -37,7 +37,7 @@ def load_existing_network(file_name):
 
 
 def train_network(model, data, epochs=1, callbacks=[], batch_size=512, interval_width=88, history_length=16, 
-                  identifier="MISSING_IDENTIFIER", generation_length=1600, iterations=100, mode="melody"):
+                  identifier="MISSING_IDENTIFIER", generation_length=1600, iterations=100, mode="melody", feature_range=[1]):
     generated_dir = os.path.dirname(os.path.realpath(__file__)) + "/Txt/" + identifier
     network_dir = os.path.dirname(os.path.realpath(__file__)) + "/Networks/" + identifier
 
@@ -58,13 +58,13 @@ def train_network(model, data, epochs=1, callbacks=[], batch_size=512, interval_
 
         # make sample songs and save them
         for seedcount, seed in enumerate(data.SeedInput):
-            for temperature in [1]:
+            for feature in feature_range:
                 song = None
                 if mode == "melody":
-                    song = Networks.test_melody_network(model, seed, generation_length, interval_width, history_length, temperature, 3)
+                    song = Networks.test_melody_network(model, seed, generation_length, interval_width, history_length, feature, 3)
                 else:
-                    song = Networks.test_accompaniment_network(model, seed, interval_width, history_length, percent=.7)
-                Processing.simple_nparray_to_txt(song, generated_dir + "_Iteration_{}_Seed_{}_Temp_{}_Count_{}".format(i + 1, seedcount, temperature, 5), identifier + "_Iteration_{}".format(i + 1))
+                    song = Networks.test_accompaniment_network(model, seed, interval_width, history_length, percent=feature)
+                Processing.simple_nparray_to_txt(song, generated_dir + "_Iteration_{}_Seed_{}_Feat_{}".format(i + 1, seedcount, feature), identifier + "_Iteration_{}".format(i + 1))
             
         # save the network for reuse
         model.save(network_dir + "_Iteration_{}.h5".format(i + 1))
@@ -79,6 +79,12 @@ def get_seed_data(data, history_length=16, data_sets=DataSets.seed):
     data.SeedInput = Processing.get_seed_data(seed_sequences, set_size=history_length)
     return data
 
+
+
+def get_accompaniment_seed_data(data, data_sets=DataSets.seed):
+    seed_sequences = Conversion.load_specified_state_matricies(data_sets)
+    data.SeedInput = Processing.get_accompaniment_seed_data(seed_sequences)
+    return data
 
 def get_train_data(data, training_percent, history_length, data_sets=DataSets.simple_scales, melody=True):
     training_songs = Conversion.load_specified_state_matricies(data_sets)
@@ -121,11 +127,12 @@ def full_accompaniment_run(learning_rate=.01, loss="categorical_crossentropy", a
     print("Starting up...")
     # do startup things like prepare txt files. Also get an identifier for the current test to use in file naming and network saving.
     identifier = startup()
-
+    
+    print(seed_dataset)
     data = Processing.Data() # this holds the data we use. The functions that it is passed to fill its variables.
 
     print("Preparing Seed Data")
-    data = get_seed_data(data=data, history_length=history_length, data_sets=seed_dataset)
+    data = get_accompaniment_seed_data(data=data, data_sets=seed_dataset)
 
     print("Preparing Training Data")
     data = get_train_data(data, training_percent, history_length, data_sets=train_dataset, melody=False)
@@ -137,7 +144,7 @@ def full_accompaniment_run(learning_rate=.01, loss="categorical_crossentropy", a
 
     print("Starting training...")
     train_network(model, epochs=epochs, data=data, callbacks=callbacks, batch_size=batch_size, 
-                  interval_width=88, history_length=history_length, identifier=identifier, generation_length=generation_length, iterations=iterations, mode="accompaniment")
+                  interval_width=88, history_length=history_length, identifier=identifier, generation_length=generation_length, iterations=iterations, mode="accompaniment", feature_range=[.05,.1])
     
     close()
 
@@ -210,7 +217,7 @@ if __name__ == "__main__":
                             learning_rate=.001, train_dataset=DataSets.sonatas, seed_dataset=["minor_seed"], 
                             history_length=16*6, loss="categorical_crossentropy", activation="softmax")
         else:
-            full_accompaniment_run(shape=[256,256], epochs=1, iterations=1, callbacks=[learning_rate_callback], 
-                                   learning_rate=.001, train_dataset=DataSets.simple_scales, seed_dataset=DataSets.small_melody_seed,
-                                   history_length=int(16*.5), loss="categorical_crossentropy", activation="sigmoid")
+            full_accompaniment_run(shape=[256,256], epochs=1, iterations=25, callbacks=[learning_rate_callback], 
+                                   learning_rate=.001, train_dataset=DataSets.sonatas, seed_dataset=DataSets.small_melody_seed,
+                                   history_length=int(16*.5), loss="mse", activation="sigmoid")
         

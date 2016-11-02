@@ -185,6 +185,24 @@ def get_seed_data(songs, set_size=8, start=0, width=88):
         seeds.append(seed)
 
     return seeds
+    
+    
+def get_accompaniment_seed_data(songs, start=0, width=88):
+    print("Building seed data...")
+
+    matricies = resize_dataset(songs, start, width)
+    
+    seeds = []
+    for song in matricies:
+        print len(song)
+        # (how many datagroups, length of datagroups, width of intervals)
+        seed = np.zeros((1, len(song), width), dtype=np.bool)
+        for t, interval in enumerate(song):
+            for c, note in enumerate(interval):
+                seed[0, t, c] = note
+        seeds.append(seed)
+
+    return seeds
 
 def resize_dataset(dataset, start, width):
     print("Resizing matricies...")
