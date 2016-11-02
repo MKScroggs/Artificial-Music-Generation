@@ -37,7 +37,7 @@ def load_existing_network(file_name):
 
 
 def train_network(model, data, epochs=1, callbacks=[], batch_size=512, interval_width=88, history_length=16, 
-                  identifier="MISSING_IDENTIFIER", generation_length=1600, iterations=100):
+                  identifier="MISSING_IDENTIFIER", generation_length=1600, iterations=100, mode="melody"):
     generated_dir = os.path.dirname(os.path.realpath(__file__)) + "/Txt/" + identifier
     network_dir = os.path.dirname(os.path.realpath(__file__)) + "/Networks/" + identifier
 
@@ -59,7 +59,11 @@ def train_network(model, data, epochs=1, callbacks=[], batch_size=512, interval_
         # make sample songs and save them
         for seedcount, seed in enumerate(data.SeedInput):
             for temperature in [1]:
-                song = Networks.test_melody_network(model, seed, generation_length, interval_width, history_length, temperature, 3)
+                song = None
+                if mode == "melody":
+                    song = Networks.test_melody_network(model, seed, generation_length, interval_width, history_length, temperature, 3)
+                else:
+                    song = Networks.test_accompaniment_network(model, seed, interval_width, history_length, percent=.7)
                 Processing.simple_nparray_to_txt(song, generated_dir + "_Iteration_{}_Seed_{}_Temp_{}_Count_{}".format(i + 1, seedcount, temperature, 5), identifier + "_Iteration_{}".format(i + 1))
             
         # save the network for reuse
@@ -155,7 +159,6 @@ def test():
     pass
 
 if __name__ == "__main__":
-    test()
     try:
         arg = sys.argv[1]
     except:
@@ -208,6 +211,6 @@ if __name__ == "__main__":
                             history_length=16*6, loss="categorical_crossentropy", activation="softmax")
         else:
             full_accompaniment_run(shape=[256,256], epochs=1, iterations=100, callbacks=[learning_rate_callback], 
-                                   learning_rate=.001, train_dataset=DataSets.sonatas, seed_dataset=DataSets.small_melody_seed,
+                                   learning_rate=.001, train_dataset=DataSets.simple_scales, seed_dataset=["minor_seed"],
                                    history_length=16*.5, loss="categorical_crossentropy", activation="softmax")
         
