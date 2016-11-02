@@ -128,7 +128,7 @@ def full_accompaniment_run(learning_rate=.01, loss="categorical_crossentropy", a
     data = get_seed_data(data=data, history_length=history_length, data_sets=seed_dataset)
 
     print("Preparing Training Data")
-    data = get_train_data(data, training_percent, history_length, data_sets=train_dataset)
+    data = get_train_data(data, training_percent, history_length, data_sets=train_dataset, melody=False)
     
     print("Building network...")
     model = build_new_network(shape=shape, interval_width=interval_width, history_length=history_length, 
@@ -137,7 +137,7 @@ def full_accompaniment_run(learning_rate=.01, loss="categorical_crossentropy", a
 
     print("Starting training...")
     train_network(model, epochs=epochs, data=data, callbacks=callbacks, batch_size=batch_size, 
-                  interval_width=88, history_length=history_length, identifier=identifier, generation_length=generation_length, iterations=iterations)
+                  interval_width=88, history_length=history_length, identifier=identifier, generation_length=generation_length, iterations=iterations, mode="accompaniment")
     
     close()
 
@@ -210,7 +210,7 @@ if __name__ == "__main__":
                             learning_rate=.001, train_dataset=DataSets.sonatas, seed_dataset=["minor_seed"], 
                             history_length=16*6, loss="categorical_crossentropy", activation="softmax")
         else:
-            full_accompaniment_run(shape=[256,256], epochs=1, iterations=100, callbacks=[learning_rate_callback], 
-                                   learning_rate=.001, train_dataset=DataSets.sonatas, seed_dataset=DataSets.small_melody_seed,
+            full_accompaniment_run(shape=[256,256], epochs=1, iterations=1, callbacks=[learning_rate_callback], 
+                                   learning_rate=.001, train_dataset=DataSets.simple_scales, seed_dataset=DataSets.small_melody_seed,
                                    history_length=int(16*.5), loss="categorical_crossentropy", activation="sigmoid")
         

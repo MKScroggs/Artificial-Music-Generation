@@ -189,7 +189,10 @@ def test_melody_network(model, seed_sequence, sequence_length, interval_width, h
 
 def test_accompaniment_network(model, seed_sequence, interval_width, history_length, percent=.7):
     generated_sequence = seed_sequence # this is a full song's melody
-    for i in range(length(seed_sequence) - history_length):
+    print seed_sequence
+    length = len(seed_sequence) - history_length
+    print length
+    for i in range(length):
         # make a window into the generated sequence that is of the proper length
         test_sequence = np.zeros((1, history_length, interval_width), dtype=np.bool)
         for j in range(history_length):
