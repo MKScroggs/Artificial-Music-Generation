@@ -340,6 +340,15 @@ tchaikovsy = [
     'tchaikovsky_six_pieces_19_6_thema_und_variationen_(c)yogore'
     ]
 
+small_melody_seed = ["1477460295_Iteration_50_Seed_0_Temp_1_Count_5"]
+
+melody_seeds = [
+    "Test_of_1477460295_Iteration_50.h5_Seed_2_Temp_1_Count_3",
+    "Test_of_1477460295_Iteration_50.h5_Seed_0_Temp_1_Count_3",
+    "Test_of_1477460295_Iteration_50.h5_Seed_1_Temp_1_Count_3",
+    ]
+
+
 sonatas = beethoven_sonatas + mozart_sonatas + haydn_sonatas
  
 bach_data = bach_fuges + bach_toccatas + bach_little_preludes

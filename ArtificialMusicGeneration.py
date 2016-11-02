@@ -76,12 +76,14 @@ def get_seed_data(data, history_length=16, data_sets=DataSets.seed):
     return data
 
 
-def get_train_data(data, training_percent, history_length, data_sets=DataSets.simple_scales):
+def get_train_data(data, training_percent, history_length, data_sets=DataSets.simple_scales, melody=True):
     training_songs = Conversion.load_specified_state_matricies(data_sets)
-    return Processing.get_melody_training_data(training_songs, percent_to_train=training_percent, set_size=history_length + 1, data=data)
+    if melody:
+        return Processing.get_melody_training_data(training_songs, percent_to_train=training_percent, set_size=history_length + 1, data=data)
+    else:
+        return Processing.get_accompaniment_training_data(training_songs, percent_to_train=training_percent, set_size=history_length + 1, data=data)
 
-
-def full_run(learning_rate=.01, loss="categorical_crossentropy", activation="softmax", callbacks=[], interval_width=88, 
+def full_melody_run(learning_rate=.01, loss="categorical_crossentropy", activation="softmax", callbacks=[], interval_width=88, 
              history_length=16, batch_size=512, epochs=1, training_percent=.9, dropout=.3, iterations=100,
              seed_dataset=DataSets.seed, train_dataset=DataSets.beethoven_sonatas, generation_length=1000, shape=[512,512]):
     
@@ -108,7 +110,34 @@ def full_run(learning_rate=.01, loss="categorical_crossentropy", activation="sof
     
     close()
 
-def test_network(model, identifier, interval_width=88, history_length=96, seed_dataset=DataSets.seed, generation_length=10000, count = 3):
+def full_accompaniment_run(learning_rate=.01, loss="categorical_crossentropy", activation="softmax", callbacks=[], interval_width=88, 
+             history_length=16, batch_size=512, epochs=1, training_percent=.9, dropout=.3, iterations=100,
+             seed_dataset=DataSets.seed, train_dataset=DataSets.beethoven_sonatas, generation_length=1000, shape=[512,512]):
+    
+    print("Starting up...")
+    # do startup things like prepare txt files. Also get an identifier for the current test to use in file naming and network saving.
+    identifier = startup()
+
+    data = Processing.Data() # this holds the data we use. The functions that it is passed to fill its variables.
+
+    print("Preparing Seed Data")
+    data = get_seed_data(data=data, history_length=history_length, data_sets=seed_dataset)
+
+    print("Preparing Training Data")
+    data = get_train_data(data, training_percent, history_length, data_sets=train_dataset)
+    
+    print("Building network...")
+    model = build_new_network(shape=shape, interval_width=interval_width, history_length=history_length, 
+                      loss=loss, activation=activation, dropout=dropout, learning_rate=learning_rate)
+
+
+    print("Starting training...")
+    train_network(model, epochs=epochs, data=data, callbacks=callbacks, batch_size=batch_size, 
+                  interval_width=88, history_length=history_length, identifier=identifier, generation_length=generation_length, iterations=iterations)
+    
+    close()
+
+def test_existing_network(model, identifier, interval_width=88, history_length=96, seed_dataset=DataSets.seed, generation_length=10000, count = 3):
     generated_dir = os.path.dirname(os.path.realpath(__file__)) + "/Txt/" + identifier
     data = Processing.Data()
     data = get_seed_data(data=data, history_length=history_length, data_sets=seed_dataset)
@@ -118,7 +147,15 @@ def test_network(model, identifier, interval_width=88, history_length=96, seed_d
             song = Networks.test_melody_network(model, seed, generation_length, interval_width, history_length, temperature, count)
             Processing.simple_nparray_to_txt(song, generated_dir + "{}_Seed_{}_Temp_{}_Count_{}".format(identifier, seedcount, temperature, count), identifier)
 
+def test():
+    startup()
+    data = Processing.Data() # this holds the data we use. The functions that it is passed to fill its variables.
+    print("Preparing Training Data")
+    data = get_train_data(data, 1, 4, data_sets=['test'], melody=False)
+    pass
+
 if __name__ == "__main__":
+    test()
     try:
         arg = sys.argv[1]
     except:
@@ -148,7 +185,7 @@ if __name__ == "__main__":
             Networks.view_network(Networks.get_network_from_file(target))
         elif mode == "-test":
             model = Networks.get_network_from_file(target)
-            test_network(model, "Test_of_{}".format(sys.argv[3]), seed_dataset=["minor_seed", "major_seed", "Twinkle"])
+            test_existing_network(model, "Test_of_{}".format(sys.argv[3]), seed_dataset=["minor_seed", "major_seed", "Twinkle"])
         else:
             raise Exception()
     else: # do a full run
@@ -156,6 +193,21 @@ if __name__ == "__main__":
             return lr * .95
 
         learning_rate_callback = Networks.LearningRateCallback(learning_schedule)
-        # early_stoping_callback = callbacks.EarlyStopping(patience=0, verbose=1)
-        full_run(shape=[512,512], epochs=1, iterations=25, callbacks=[learning_rate_callback], learning_rate=.001, train_dataset=DataSets.sonatas, seed_dataset=["minor_seed"], history_length=16*6, loss="categorical_crossentropy", activation="softmax")
-
+        
+        mode = None
+        try:
+            mode = sys.argv[2]
+            if mode != "-m" and mode != "-a":
+                raise Exception()
+        except:
+            print("Invalid or empty field for 'mode'.")
+            raise Exception()
+        if mode == "-m":
+            full_melody_run(shape=[512,512], epochs=1, iterations=25, callbacks=[learning_rate_callback], 
+                            learning_rate=.001, train_dataset=DataSets.sonatas, seed_dataset=["minor_seed"], 
+                            history_length=16*6, loss="categorical_crossentropy", activation="softmax")
+        else:
+            full_accompaniment_run(shape=[256,256], epochs=1, iterations=100, callbacks=[learning_rate_callback], 
+                                   learning_rate=.001, train_dataset=DataSets.sonatas, seed_dataset=DataSets.small_melody_seed,
+                                   history_length=16*.5, loss="categorical_crossentropy", activation="softmax")
+        

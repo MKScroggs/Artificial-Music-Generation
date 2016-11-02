@@ -15,7 +15,6 @@ class Data(object):
 
         
 def get_melody_training_data(songs, percent_to_train, set_size=8, start=0, width=88, data=None):
-    random.seed(1)
     print("Building training data...")
     training_preceeding_intervals = []
     training_next_interval = []
@@ -83,31 +82,51 @@ def get_melody_training_data(songs, percent_to_train, set_size=8, start=0, width
     return data
         
 
-def get_accompaniment_training_data(songs, percent_to_train, set_size=8, start=0, width=88):
-    random.seed(1)
+def get_accompaniment_training_data(songs, percent_to_train, set_size=8, start=0, width=88, data=None):
     print("Building training data...")
     training_preceeding_intervals = []
     training_next_interval = []
     testing_preceeding_intervals = []
     testing_next_interval = []
 
-    matricies = resize_dataset(songs, start, width)
+    resized_songs = []
 
-    for i, matrix in enumerate(matricies):
+    #todo: this should be in song, i should request the song at a specific size and location
+    print("Resizing matricies...")
+    training_data = []
+    for song in songs:
+        resized_full_matrix = []
+        resized_melody_matrix = []
+
+        # resize the full matrix
+        full_matrix = song.get_simple_matrix()
+        for line in full_matrix:
+            resized_full_matrix.append(line[start:start + width])
+
+        # resize the melody matrix
+        melody_matrix = song.get_simple_melody_matrix()
+        for line in melody_matrix:
+            resized_melody_matrix.append(line[start:start + width])
+
+        resized_songs.append((resized_full_matrix, resized_melody_matrix))
+
+
+    for i, pair in enumerate(resized_songs):
         print("... Building subsets for song {}".format(i))
-        length = len(matrix)
+        length = len(pair[0]) # get the length of the songs
 
-        for j in range(length - set_size + 1):
+        for j in range(length - set_size + 2):
             preceeding_intervals = []
-            for k in range(set_size - 1):
-                preceeding_intervals.append(matrix[j + k])
+            for k in range(set_size - 2):
+                preceeding_intervals.append(pair[0][j + k]) # add the full song up to the last note
+            preceeding_intervals.append(pair[1][j + set_size - 2]) # the final note is just the melody at the time that we are predicting
 
             if random.random() <= percent_to_train:
                 training_preceeding_intervals.append(preceeding_intervals)
-                training_next_interval.append(matrix[j + set_size - 1])
+                training_next_interval.append(pair[0][j + set_size - 2])
             else:
                 testing_preceeding_intervals.append(preceeding_intervals)
-                testing_next_interval.append(matrix[j + set_size - 1])
+                testing_next_interval.append(pair[0][j + set_size - 2])
 
     print("Vectorizing training data...")
     # (how many datagroups, length of datagroups, width of intervals)
@@ -134,8 +153,9 @@ def get_accompaniment_training_data(songs, percent_to_train, set_size=8, start=0
                 test_input[i, t, c] = note
         for n, note in enumerate(testing_next_interval[i]):
             test_target[i, n] = note
-
-    data = Data()
+            
+    if data is None:
+        data = Data()
     data.TestInput = test_input
     data.TestTarget = test_target
     data.TrainingInput = training_input
