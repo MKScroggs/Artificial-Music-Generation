@@ -121,7 +121,7 @@ def full_melody_run(learning_rate=.01, loss="categorical_crossentropy", activati
     close()
 
 def full_accompaniment_run(learning_rate=.01, loss="categorical_crossentropy", activation="softmax", callbacks=[], interval_width=88, 
-             history_length=16, batch_size=512, epochs=1, training_percent=.9, dropout=.3, iterations=100,
+             history_length=16, batch_size=1024, epochs=1, training_percent=.9, dropout=.3, iterations=100,
              seed_dataset=DataSets.seed, train_dataset=DataSets.beethoven_sonatas, generation_length=1000, shape=[512,512]):
     
     print("Starting up...")
@@ -144,7 +144,7 @@ def full_accompaniment_run(learning_rate=.01, loss="categorical_crossentropy", a
 
     print("Starting training...")
     train_network(model, epochs=epochs, data=data, callbacks=callbacks, batch_size=batch_size, 
-                  interval_width=88, history_length=history_length, identifier=identifier, generation_length=generation_length, iterations=iterations, mode="accompaniment", feature_range=[.05,.1])
+                  interval_width=88, history_length=history_length, identifier=identifier, generation_length=generation_length, iterations=iterations, mode="accompaniment", feature_range=[2,3,5])
     
     close()
 
@@ -217,7 +217,7 @@ if __name__ == "__main__":
                             learning_rate=.001, train_dataset=DataSets.sonatas, seed_dataset=["minor_seed"], 
                             history_length=16*6, loss="categorical_crossentropy", activation="softmax")
         else:
-            full_accompaniment_run(shape=[256,256], epochs=1, iterations=25, callbacks=[learning_rate_callback], 
-                                   learning_rate=.001, train_dataset=DataSets.simple_scales, seed_dataset=DataSets.small_melody_seed,
-                                   history_length=int(16*.5), loss="mse", activation="sigmoid")
+            full_accompaniment_run(shape=[512,512], epochs=1, iterations=1000, callbacks=[learning_rate_callback], 
+                                   learning_rate=.0001, train_dataset=DataSets.sonatas, seed_dataset=DataSets.small_melody_seed,
+                                   history_length=int(16*6), loss="mse", activation="softmax")
         
