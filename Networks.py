@@ -187,7 +187,7 @@ def test_melody_network(model, seed_sequence, sequence_length, interval_width, h
 
     return generated_sequence
 
-def test_accompaniment_network(model, seed_sequence, interval_width, history_length, percent=3):
+def test_accompaniment_network(model, seed_sequence, interval_width, history_length, feature=1, count=3):
     generated_sequence = seed_sequence # this is a full song's melody
     length = len(seed_sequence[0]) - history_length
     
@@ -200,9 +200,15 @@ def test_accompaniment_network(model, seed_sequence, interval_width, history_len
 
         #make a prediction
         prediction = model.predict(test_sequence)[0]
+        
+        #remove the seed note
+        for n, note in enumerate(test_sequence[0][history_length-1]):
+            if note == 1:
+                prediction[n] = 0
+            
 
         # pick the best note
-        predicted_matrix = get_top_n(prediction, interval_width, percent)
+        predicted_matrix = sample(prediction, interval_width, feature, count)
         
         for n, note in enumerate(predicted_matrix[0][0]):
             if note == 1:
