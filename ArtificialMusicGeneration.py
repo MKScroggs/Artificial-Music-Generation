@@ -149,7 +149,7 @@ def full_accompaniment_run(learning_rate=.01, loss="categorical_crossentropy", a
 
     print("Starting training...")
     train_network(model, epochs=epochs, data=data, callbacks=callbacks, batch_size=batch_size, 
-                  interval_width=88, history_length=history_length, identifier=identifier, generation_length=generation_length, iterations=iterations, mode="accompaniment", feature_range=[2,3,5])
+                  interval_width=88, history_length=history_length, identifier=identifier, generation_length=generation_length, iterations=iterations, mode="accompaniment", feature_range=[.25,.5,1,1.5])
     
     close()
 
@@ -163,16 +163,18 @@ def test_existing_melody_network(model, identifier, interval_width=88, history_l
             song = Networks.test_melody_network(model, seed, generation_length, interval_width, history_length, temperature, count)
             Processing.simple_nparray_to_txt(song, generated_dir + "{}_Seed_{}_Temp_{}_Count_{}".format(identifier, seedcount, temperature, count), identifier)
 
-def test_existing_accompaniment_network(model, identifier, interval_width=88, history_length=96, seed_dataset=DataSets.seed, features=[1], counts=[2,3,5,8,44]):
+def test_existing_accompaniment_network(model, identifier, interval_width=88, history_length=96, seed_dataset=DataSets.seed, features=[1], counts=[1,2,3,5]):
     generated_dir = os.path.dirname(os.path.realpath(__file__)) + "/Txt/" + identifier.split('.')[0] + '_'
     data = Processing.Data()
     data = get_accompaniment_seed_data(data=data, data_sets=seed_dataset)
+    temperature = 1
+    count = 1
     for seedcount, seed in enumerate(data.SeedInput):
         for temperature in features:
-            for count in counts:
-                print("Generating for seed:{} and temp:{}".format(seedcount, temperature))
-                song = Networks.test_accompaniment_network(model, seed, interval_width, history_length, temperature, count)
-                Processing.simple_nparray_to_txt(song, generated_dir + "Seed_{}_Temp_{}_Count_{}".format(seedcount, temperature, count), identifier)
+        #for count in counts:
+            print("Generating for seed:{} and temp:{}".format(seedcount, temperature))
+            song = Networks.test_accompaniment_network(model, seed, interval_width, history_length, temperature, count)
+            Processing.simple_nparray_to_txt(song, generated_dir + "Seed_{}_Temp_{}_Count_{}".format(seedcount, temperature, count), identifier)
             
 def test():
     startup()
@@ -212,7 +214,7 @@ if __name__ == "__main__":
         elif mode == "-testa":
             model = Networks.get_network_from_file(target)
             print("Test_of_{}".format(sys.argv[3]))
-            test_existing_accompaniment_network(model, "Test_of_{}".format(sys.argv[3]), history_length=16, seed_dataset=DataSets.small_melody_seed, features=[.5, .75, 1, 1.5, 2])
+            test_existing_accompaniment_network(model, "Test_of_{}".format(sys.argv[3]), history_length=16*2, seed_dataset=DataSets.small_melody_seed, features=[.10, .25, .5, .75, .9, .95])
         elif mode == "-testm":
             model = Networks.get_network_from_file(target)
             test_existing_melody_network(model, "Test_of_{}".format(sys.argv[3]), seed_dataset=["minor_seed", "major_seed", "Twinkle"])
@@ -221,7 +223,7 @@ if __name__ == "__main__":
         close()
     else: # do a full run
         def learning_schedule(lr):
-            return lr * .93
+            return lr * .95
 
         learning_rate_callback = Networks.LearningRateCallback(learning_schedule)
         
@@ -238,7 +240,7 @@ if __name__ == "__main__":
                             learning_rate=.001, train_dataset=DataSets.sonatas, seed_dataset=["minor_seed"], 
                             history_length=16*6, loss="categorical_crossentropy", activation="softmax")
         else:
-            full_accompaniment_run(shape=[512,512], epochs=1, iterations=100, callbacks=[learning_rate_callback], 
-                                   learning_rate=.001, train_dataset=DataSets.sonatas, seed_dataset=DataSets.small_melody_seed,
-                                   history_length=int(16*6), loss="categorical_crossentropy", activation="softmax", batch_size=256)
+            full_accompaniment_run(shape=[1024,516,256], epochs=1, iterations=100, callbacks=[learning_rate_callback], 
+                                   learning_rate=.0001, train_dataset=DataSets.sonatas, seed_dataset=DataSets.small_melody_seed,
+                                   history_length=int(16*2), loss="categorical_crossentropy", activation="sigmoid", batch_size=128)
         

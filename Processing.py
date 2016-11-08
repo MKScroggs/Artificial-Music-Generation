@@ -194,7 +194,6 @@ def get_accompaniment_seed_data(songs, start=0, width=88):
     
     seeds = []
     for song in matricies:
-        print len(song)
         # (how many datagroups, length of datagroups, width of intervals)
         seed = np.zeros((1, len(song), width), dtype=np.bool)
         for t, interval in enumerate(song):
