@@ -16,7 +16,7 @@ simple_scales = [
 ]
 seed = ["Twinkle"]
 
-
+moonlight = ["sonate_14_(c)hisamori"]
 beethoven_sonatas = [
     "sonate_01_(c)hisamori",
     "sonate_02_(c)hisamori",

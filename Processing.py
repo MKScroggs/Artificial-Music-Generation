@@ -203,6 +203,20 @@ def get_accompaniment_seed_data(songs, start=0, width=88):
 
     return seeds
 
+
+def get_test_seed_data(songs, start=0, width=88):
+    matrix = songs[0].get_simple_melody_matrix()
+    seeds = []
+    # (how many datagroups, length of datagroups, width of intervals)
+    seed = np.zeros((1, len(matrix), width), dtype=np.bool)
+
+    for t, interval in enumerate(matrix):
+        for c, note in enumerate(interval):
+            seed[0, t, c] = note
+    seeds.append(seed)
+    return seeds
+        
+        
 def resize_dataset(dataset, start, width):
     print("Resizing matricies...")
     training_data = []

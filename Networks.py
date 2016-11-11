@@ -203,17 +203,19 @@ def test_accompaniment_network(model, seed_sequence, interval_width, history_len
         
         #remove the seed note
         for n, note in enumerate(test_sequence[0][history_length-1]):
+           # print (n, test_sequence[0][history_length-1][n], prediction[n])
             if note == 1:
                 prediction[n] = 0
-            
+        
+        #raw_input("")
 
         # pick the best note
-        predicted_matrix = get_above_percent(prediction, interval_width, feature)
-        #predicted_matrix = sample(prediction, interval_width, feature, count)
+        #predicted_matrix = get_above_percent(prediction, interval_width, feature)
+        predicted_matrix = sample(prediction, interval_width, feature, count)
         
         for n, note in enumerate(predicted_matrix[0][0]):
             if note == 1:
-                generated_sequence[0][i + history_length][n] = 1 #add the predicted notes
+                generated_sequence[0][i + history_length - 1][n] = 1 #add the predicted notes
 
 
     return generated_sequence
