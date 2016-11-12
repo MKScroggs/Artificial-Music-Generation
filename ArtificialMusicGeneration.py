@@ -27,8 +27,8 @@ def close():
 
 def build_new_network(shape=[512,512], learning_rate=.01, interval_width=88, history_length=16, 
                       loss="categorical_crossentropy", activation="softmax", dropout=.3):
-    optimizer = keras.optimizers.RMSprop (lr=learning_rate)
-
+    #optimizer = keras.optimizers.RMSprop (lr=learning_rate)
+    optimizer = keras.optimizers.Adam()
     model = Networks.get_LSTM(shape, optimizer, loss, interval_width, history_length, activation, dropout=dropout, metrics=['accuracy'])
     return model
 
@@ -262,7 +262,7 @@ if __name__ == "__main__":
                             learning_rate=.001, train_dataset=DataSets.sonatas, seed_dataset=["minor_seed"], 
                             history_length=16*6, loss="categorical_crossentropy", activation="softmax")
         else:
-            test_full_accompaniment_run(shape=[256, 256, 256, 256], epochs=1, iterations=100, callbacks=[learning_rate_callback], 
-                                   learning_rate=.0001, train_dataset=DataSets.sonatas, seed_dataset=DataSets.moonlight,
-                                   history_length=int(16*2), loss="categorical_crossentropy", activation="softmax", batch_size=1026)
+            full_accompaniment_run(shape=[512, 512, 256], epochs=1, iterations=100, callbacks=[], 
+                                   learning_rate=.0001, train_dataset=DataSets.sonatas, seed_dataset=DataSets.small_melody_seed,
+                                   history_length=int(16*1), loss="categorical_crossentropy", activation="softmax", batch_size=1026)
         
