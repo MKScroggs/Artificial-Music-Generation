@@ -1,4 +1,5 @@
-# Modified from https://github.com/hexahedria/biaxial-rnn-music-composition/blob/master/midi_to_statematrix.py
+# Modified from https://github.com/hexahedria/biaxial-rnn-music-composition/
+# blob/master/midi_to_statematrix.py
 import midi
 import numpy
 import os
@@ -7,37 +8,45 @@ import Song
 lowerBound = 20
 upperBound = 108
 volume = 50
-dir =  os.path.dirname(os.path.realpath(__file__))
 
+dir = os.path.dirname(os.path.realpath(__file__))
 
 
 def load_specified_state_matricies(filenames):
     songs = []
-    
-    #load the songs
+
+    # load the songs
     for filename in filenames:
         print("Loading {}".format(filename))
         songs.append(read_state_matrix_file(dir + '/Txt/' + filename))
-    
+
     return songs
 
-def convert_specific_midi(file_in, song_name, base_note=4, beats_per_measure=4, smallest_note=4, triplets=False, transposition="auto"):
+
+def convert_specific_midi(file_in, song_name, base_note=4, beats_per_measure=4,
+                          smallest_note=4, triplets=False,
+                          transposition="auto"):
     dir = os.path.dirname(os.path.realpath(__file__))
-    convert_to_matrix(dir + '/Midi/' + file_in, dir + '/Txt/' + song_name, base_note, beats_per_measure, smallest_note, triplets, transposition)
+    convert_to_matrix(dir + '/Midi/' + file_in, dir + '/Txt/' + song_name,
+                      base_note, beats_per_measure, smallest_note, triplets,
+                      transposition)
     pass
 
 
-def convert_txt_folder(overwrite=False, midi_extension="Midi", txt_extension="Txt"):
+def convert_txt_folder(overwrite=False, midi_extension="Midi",
+                       txt_extension="Txt"):
 
     print "Converting .Txt to .Mid..."
     midi_target = dir + "/" + midi_extension + "/"
     txt_target = dir + "/" + txt_extension + "/"
 
-    midis = [os.path.splitext(file)[0] for file in os.listdir(midi_target) if file.endswith('.mid')]
-   # print "Files in midi directory are: {}".format(midis)
+    midis = [os.path.splitext(file)[0] for file in os.listdir(midi_target)
+             if file.endswith('.mid')]
+    # print "Files in midi directory are: {}".format(midis)
 
-    txts = [os.path.splitext(file)[0] for file in os.listdir(txt_target) if file.endswith('.txt')]
-   # print "Files in txt directory are:  {}".format(txts)
+    txts = [os.path.splitext(file)[0] for file in os.listdir(txt_target)
+            if file.endswith('.txt')]
+    # print "Files in txt directory are:  {}".format(txts)
 
     if overwrite:
         for item in txts:
@@ -51,39 +60,47 @@ def convert_txt_folder(overwrite=False, midi_extension="Midi", txt_extension="Tx
     print "...Done convertring .Txt to .Mid\n"
 
 
-def convert_midi_folder(overwrite=False, base_note=4, beats_per_measure=4, smallest_note=4, triplets=False, midi_extension="Midi", txt_extension="Txt"):
+def convert_midi_folder(overwrite=False, base_note=4, beats_per_measure=4,
+                        smallest_note=4, triplets=False, midi_extension="Midi",
+                        txt_extension="Txt"):
 
     print "Converting .Mid to .Txt..."
     midi_target = dir + "/" + midi_extension + "/"
     txt_target = dir + "/" + txt_extension + "/"
 
-    midis = [os.path.splitext(file)[0] for file in os.listdir(midi_target) if file.endswith('.mid')]
-   # print "Files in midi directory are: {}".format(midis)
+    midis = [os.path.splitext(file)[0] for file in os.listdir(midi_target)
+             if file.endswith('.mid')]
+    # print "Files in midi directory are: {}".format(midis)
 
-    txts = [os.path.splitext(file)[0] for file in os.listdir(txt_target) if file.endswith('.txt')]
-   # print "Files in txt directory are:  {}".format(txts)
+    txts = [os.path.splitext(file)[0] for file in os.listdir(txt_target)
+            if file.endswith('.txt')]
+    # print "Files in txt directory are:  {}".format(txts)
 
     if overwrite:
         for item in midis:
             print "Converting {} to .txt".format(item)
             convert_to_matrix(midi_target + item, txt_target + item,
-                          base_note, beats_per_measure, smallest_note, triplets)
+                              base_note, beats_per_measure, smallest_note,
+                              triplets)
     else:
         for item in [item for item in midis if item not in txts]:
             print "Converting {} to .txt".format(item)
             convert_to_matrix(midi_target + item, txt_target + item,
-                              base_note, beats_per_measure, smallest_note, triplets)
+                              base_note, beats_per_measure, smallest_note,
+                              triplets)
 
     print "...Done convertring .Mid to .Txt\n"
 
 
-def convert_to_matrix(file_in, file_out, base_note=4, beats_per_measure=4, smallest_note=4, triplets=False, transpostion="auto"):
+def convert_to_matrix(file_in, file_out, base_note=4, beats_per_measure=4,
+                      smallest_note=4, triplets=False, transpostion="auto"):
     # set vars for conversion
     time_signature = Song.TimeSignature(base_note, beats_per_measure)
     desired_interval = DesiredInterval(smallest_note, triplets)
 
     # Read the Midi and return the song
-    song = midi_to_note_state_matrix(file_in, file_out, time_signature, desired_interval)
+    song = midi_to_note_state_matrix(file_in, file_out, time_signature,
+                                     desired_interval)
 
     # remove extra rests from beggining and end
     song = fix_trailing_rests(song)
@@ -110,9 +127,10 @@ def write_state_matrix_file(filename, song):
     f = open(filename + '.txt', 'w')
 
     # write the header
-    f.write(song.TrackName + '\n' + str(song.Tempo) + '\n' + str(song.TimeSignature.BaseNote) + '\n' +
-               str(song.TimeSignature.BeatsPerMeasure) + '\n' + str(song.Interval) + '\n' +
-               str(song.Resolution) + '\n')
+    f.write(song.TrackName + '\n' + str(song.Tempo) + '\n' +
+            str(song.TimeSignature.BaseNote) + '\n' +
+            str(song.TimeSignature.BeatsPerMeasure) + '\n' +
+            str(song.Interval) + '\n' + str(song.Resolution) + '\n')
 
     # get the length of the first line
     length = len(song.StateMatrix[0])
@@ -165,16 +183,18 @@ def read_state_matrix_file(filename):
             state_matrix.append(state)
 
         # build the Song object
-        song = Song.Song(name, base_note, beats_per_measure, interval, tempo, state_matrix, resolution)
+        song = Song.Song(name, base_note, beats_per_measure, interval, tempo,
+                         state_matrix, resolution)
 
     return song
+
 
 class DesiredInterval(object):
     """
     Data used to determine how to read/write a file
     """
-    def __init__(self, base=8, triplets = False):
-        # what is the smallest note we will write (smaller notes will be read, but written as this
+    def __init__(self, base=8, triplets=False):
+        # what is the smallest note we will write
         self.SmallestNote = base
         # are we reading triplets?
         self.Triplets = triplets
@@ -202,29 +222,36 @@ def get_ticks_per_interval(resolution, time_signature, desired_interval):
     ticks_per_measure = resolution * time_signature.BeatsPerMeasure
 
     # determine the number of intervals to train on per measure
-    intervals_per_measure = time_signature.BeatsPerMeasure * desired_interval.SmallestNote / time_signature.BaseNote
-    if desired_interval.Triplets is True:  # if triplets are to be read properly, multiply by 3
+    intervals_per_measure = time_signature.BeatsPerMeasure *\
+                            desired_interval.SmallestNote /\
+                            time_signature.BaseNote
+    if desired_interval.Triplets is True:
+        # if triplets are to be read properly, multiply by 3
         intervals_per_measure *= 3
 
     # the ticks per interal is the ticks per measure / intervals per measure
     return int(ticks_per_measure / intervals_per_measure)
 
 
-def midi_to_note_state_matrix(midifile, name, time_sig, desired_interval, tempo=90):
+def midi_to_note_state_matrix(midifile, name, time_sig, desired_interval,
+                              tempo=90):
     """
     Reads a Midi File and generates a Song object to return
     :param midifile: The file to read
     :param name:  The name of the song
     :param time_sig: The time signature of the song (type TimeSignature)
-    :param desired_interval: the desired minimum interval size (type DesiredInterval)
-    :param tempo: The default tempo of the piece. For use if the Midi lacks a tempo. Defaults to 90.
+    :param desired_interval: the desired minimum interval size
+     (type DesiredInterval)
+    :param tempo: The default tempo of the piece. For use if the Midi lacks a
+     tempo. Defaults to 90.
     :return:
     """
     # read the midi file
     pattern = midi.read_midifile(midifile + ".mid")
 
     # get the number of ticks to read at a time
-    ticks_per_interval = get_ticks_per_interval(pattern.resolution, time_sig, desired_interval)
+    ticks_per_interval = get_ticks_per_interval(pattern.resolution,
+                                                time_sig, desired_interval)
 
     # how many ticks are there? for each track
     time_left = [track[0].tick for track in pattern]
@@ -259,22 +286,18 @@ def midi_to_note_state_matrix(midifile, name, time_sig, desired_interval, tempo=
                 if isinstance(evt, midi.NoteEvent):
                     if (evt.pitch < lowerBound) or (evt.pitch >= upperBound):
                         pass
-                        # print "Note {} at time {} out of bounds (ignoring)".format(evt.pitch, time)
+                        # print "Note {} at time {} out of bounds
+                        # (ignoring)".format(evt.pitch, time)
                     else:
-                        if isinstance(evt, midi.NoteOffEvent) or evt.velocity == 0:
+                        if isinstance(evt, midi.NoteOffEvent) or \
+                           evt.velocity == 0:
                             state[evt.pitch - lowerBound] = [0, 0]
                         else:
                             state[evt.pitch - lowerBound] = [1, 1]
 
-                # Removed with songs including time signature
-                # elif isinstance(evt, midi.TimeSignatureEvent):
-                #    if evt.numerator not in (2, 4):
-                #        # We don't want to worry about non-4 time signatures. Bail early!
-                #        print "Found time signature event {}. Bailing!".format(evt)
-                #        return state_matrix
-
                 elif isinstance(evt, midi.SetTempoEvent):
-                    # we want to get the tempo for recreation purposes. This does not handle multi tempo songs well.
+                    # we want to get the tempo for recreation purposes.
+                    # This does not handle multi tempo songs well.
                     # (just picks the last tempo)
                     tempo = int(evt.bpm)
 
@@ -291,7 +314,8 @@ def midi_to_note_state_matrix(midifile, name, time_sig, desired_interval, tempo=
             break
 
         if time % ticks_per_interval == 0:
-            # Crossed a note boundary. Create a new state, defaulting to holding notes
+            # Crossed a note boundary. Create a new state,
+            # defaulting to holding notes
             oldstate = state
             state = [[oldstate[x][0], 0] for x in range(span)]
             state_matrix.append(state)
@@ -299,8 +323,9 @@ def midi_to_note_state_matrix(midifile, name, time_sig, desired_interval, tempo=
         time += 1
 
     # build the song to return
-    song = Song.Song(name, time_sig.BaseNote, time_sig.BeatsPerMeasure, ticks_per_interval, tempo, state_matrix,
-                pattern.resolution)
+    song = Song.Song(name, time_sig.BaseNote, time_sig.BeatsPerMeasure,
+                     ticks_per_interval, tempo, state_matrix,
+                     pattern.resolution)
     return song
 
 
@@ -319,11 +344,16 @@ def note_state_matrix_to_midi(song, name):
     span = upperBound - lowerBound
 
     tickscale = song.Interval
+    """
+    # Midi uses bytes to encode data. Tempo is in milliseconds, so it takes 3
+    bytes to encode the tempo. I don't want to convert to the 3byte encoding,
+    so i will use the setter provided by python-midi
+    """
+    tempo_event = midi.SetTempoEvent(tick=0, data=[1, 1, 1])
+    # instantiate with nonsense data (tick is right though)
+    tempo_event.set_bpm(song.Tempo)
+    # use setter to convert tempo (in bpm) to Midi encoding
 
-    # Midi uses bytes to encode data. Tempo is in milliseconds, so it takes 3 bytes to encode the tempo.
-    # I don't want to convert to the 3byte encoding, so i will use the setter provided by python-midi
-    tempo_event = midi.SetTempoEvent(tick=0, data=[1, 1, 1])  # instantiate with nonsense data (tick is right though)
-    tempo_event.set_bpm(song.Tempo)  # use setter to convert tempo (in bpm) to Midi encoding
     track.append(tempo_event)
     lastcmdtime = 0
     prevstate = [[0, 0] for x in range(span)]
@@ -342,10 +372,13 @@ def note_state_matrix_to_midi(song, name):
             elif n[0] == 1:
                 onNotes.append(i)
         for note in offNotes:
-            track.append(midi.NoteOffEvent(tick=(time - lastcmdtime) * tickscale, pitch=note + lowerBound))
+            track.append(midi.NoteOffEvent(tick=(time - lastcmdtime) *
+                                           tickscale, pitch=note + lowerBound))
             lastcmdtime = time
         for note in onNotes:
-            track.append(midi.NoteOnEvent(tick=(time - lastcmdtime) * tickscale, velocity=volume, pitch=note + lowerBound))
+            track.append(midi.NoteOnEvent(tick=(time - lastcmdtime) *
+                                          tickscale, velocity=volume,
+                                          pitch=note + lowerBound))
             lastcmdtime = time
 
         prevstate = state
@@ -382,7 +415,8 @@ def get_end_of_notes(matrix):
 
 def fix_trailing_rests(song):
     """
-    Ensures that a song has 0 blank states to start and  to end. If not, it makes it so.
+    Ensures that a song has 0 blank states to start and  to end. If not,
+    it makes it so.
     :param song: song to fix (they are almost never right to start...)
     :return: the fixed song
     """
@@ -399,7 +433,6 @@ def fix_trailing_rests(song):
 
     for state in matrix[start_of_notes:end_of_notes]:
         new_matrix .append(state)
-
 
     song.StateMatrix = new_matrix
     return song

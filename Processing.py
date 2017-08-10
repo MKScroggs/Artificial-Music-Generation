@@ -5,22 +5,24 @@ from time import time
 import os
 import random
 
+
 class Data(object):
     def __init__(self):
-        self.TrainingInput  = []
+        self.TrainingInput = []
         self.TrainingTarget = []
-        self.TestInput      = []
-        self.TestTarget     = []
-        self.SeedInput      = []
+        self.TestInput = []
+        self.TestTarget = []
+        self.SeedInput = []
 
-        
-def get_melody_training_data(songs, percent_to_train, set_size=8, start=0, width=88, data=None):
+
+def get_melody_training_data(songs, percent_to_train, set_size=8,
+                             start=0, width=88, data=None):
     print("Building training data...")
     training_preceeding_intervals = []
     training_next_interval = []
     testing_preceeding_intervals = []
     testing_next_interval = []
-    
+
     print("Resizing matricies...")
     matricies = []
     for song in songs:
@@ -48,9 +50,11 @@ def get_melody_training_data(songs, percent_to_train, set_size=8, start=0, width
 
     print("Vectorizing training data...")
     # (how many datagroups, length of datagroups, width of intervals)
-    training_input = np.zeros((len(training_preceeding_intervals), set_size - 1, width), dtype=np.bool)
+    training_input = np.zeros((len(training_preceeding_intervals),
+                               set_size - 1, width), dtype=np.bool)
     # (how many datagroups, width of intervals)
-    training_target = np.zeros((len(training_preceeding_intervals), width), dtype=np.bool)
+    training_target = np.zeros((len(training_preceeding_intervals), width),
+                               dtype=np.bool)
 
     for i, section in enumerate(training_preceeding_intervals):
         for t, interval in enumerate(section):
@@ -61,9 +65,11 @@ def get_melody_training_data(songs, percent_to_train, set_size=8, start=0, width
 
     print("Vectorizing testing data...")
     # (how many datagroups, length of datagroups, width of intervals)
-    test_input = np.zeros((len(testing_preceeding_intervals), set_size - 1, width), dtype=np.bool)
+    test_input = np.zeros((len(testing_preceeding_intervals),
+                           set_size - 1, width), dtype=np.bool)
     # (how many datagroups, width of intervals)
-    test_target = np.zeros((len(testing_preceeding_intervals), width), dtype=np.bool)
+    test_target = np.zeros((len(testing_preceeding_intervals), width),
+                           dtype=np.bool)
 
     for i, section in enumerate(testing_preceeding_intervals):
         for t, interval in enumerate(section):
@@ -71,7 +77,7 @@ def get_melody_training_data(songs, percent_to_train, set_size=8, start=0, width
                 test_input[i, t, c] = note
         for n, note in enumerate(testing_next_interval[i]):
             test_target[i, n] = note
-    
+
     if data is None:
         data = Data()
     data.TestInput = test_input
@@ -80,9 +86,10 @@ def get_melody_training_data(songs, percent_to_train, set_size=8, start=0, width
     data.TrainingTarget = training_target
 
     return data
-        
 
-def get_accompaniment_training_data(songs, percent_to_train, set_size=8, start=0, width=88, data=None):
+
+def get_accompaniment_training_data(songs, percent_to_train,
+                                    set_size=8, start=0, width=88, data=None):
     print("Building training data...")
     training_preceeding_intervals = []
     training_next_interval = []
@@ -91,7 +98,8 @@ def get_accompaniment_training_data(songs, percent_to_train, set_size=8, start=0
 
     resized_songs = []
 
-    #todo: this should be in song, i should request the song at a specific size and location
+    # todo: this should be in song, i should request the song at a specific
+    # size and location
     print("Resizing matricies...")
     training_data = []
     for song in songs:
@@ -110,16 +118,18 @@ def get_accompaniment_training_data(songs, percent_to_train, set_size=8, start=0
 
         resized_songs.append((resized_full_matrix, resized_melody_matrix))
 
-
     for i, pair in enumerate(resized_songs):
         print("... Building subsets for song {}".format(i))
-        length = len(pair[0]) # get the length of the songs
+        length = len(pair[0])  # get the length of the songs
 
         for j in range(length - set_size + 2):
             preceeding_intervals = []
             for k in range(set_size - 2):
-                preceeding_intervals.append(pair[0][j + k]) # add the full song up to the last note
-            preceeding_intervals.append(pair[1][j + set_size - 2]) # the final note is just the melody at the time that we are predicting
+                preceeding_intervals.append(pair[0][j + k])
+                # add the full song up to the last note
+            preceeding_intervals.append(pair[1][j + set_size - 2])
+            # the final note is just the melody at
+            # the time that we are predicting
 
             if random.random() <= percent_to_train:
                 training_preceeding_intervals.append(preceeding_intervals)
@@ -130,9 +140,11 @@ def get_accompaniment_training_data(songs, percent_to_train, set_size=8, start=0
 
     print("Vectorizing training data...")
     # (how many datagroups, length of datagroups, width of intervals)
-    training_input = np.zeros((len(training_preceeding_intervals), set_size - 1, width), dtype=np.bool)
+    training_input = np.zeros((len(training_preceeding_intervals),
+                               set_size - 1, width), dtype=np.bool)
     # (how many datagroups, width of intervals)
-    training_target = np.zeros((len(training_preceeding_intervals), width), dtype=np.bool)
+    training_target = np.zeros((len(training_preceeding_intervals), width),
+                               dtype=np.bool)
 
     for i, section in enumerate(training_preceeding_intervals):
         for t, interval in enumerate(section):
@@ -143,9 +155,11 @@ def get_accompaniment_training_data(songs, percent_to_train, set_size=8, start=0
 
     print("Vectorizing testing data...")
     # (how many datagroups, length of datagroups, width of intervals)
-    test_input = np.zeros((len(testing_preceeding_intervals), set_size - 1, width), dtype=np.bool)
+    test_input = np.zeros((len(testing_preceeding_intervals),
+                           set_size - 1, width), dtype=np.bool)
     # (how many datagroups, width of intervals)
-    test_target = np.zeros((len(testing_preceeding_intervals), width), dtype=np.bool)
+    test_target = np.zeros((len(testing_preceeding_intervals), width),
+                           dtype=np.bool)
 
     for i, section in enumerate(testing_preceeding_intervals):
         for t, interval in enumerate(section):
@@ -153,7 +167,7 @@ def get_accompaniment_training_data(songs, percent_to_train, set_size=8, start=0
                 test_input[i, t, c] = note
         for n, note in enumerate(testing_next_interval[i]):
             test_target[i, n] = note
-            
+
     if data is None:
         data = Data()
     data.TestInput = test_input
@@ -162,6 +176,7 @@ def get_accompaniment_training_data(songs, percent_to_train, set_size=8, start=0
     data.TrainingTarget = training_target
 
     return data
+
 
 def get_seed_data(songs, set_size=8, start=0, width=88):
     print("Building seed data...")
@@ -228,14 +243,14 @@ def resize_dataset(dataset, start, width):
         training_data.append(resized_matrix)
     return training_data
 
+
 def restore_song_size(song, start, width):
     beginning = [0 for i in range(start)]
     end = [0 for i in range(88 - start - width)]
 
     return [beginning + interval + end for interval in song]
 
-    
-    
+
 def simple_nparray_to_txt(array, path, name):
     state_matrix = []
 
@@ -246,6 +261,7 @@ def simple_nparray_to_txt(array, path, name):
         for j, note in enumerate(interval):
             notes.append(int(array[0, i, j]))
         state_matrix.append(notes)
-    song.set_StateMatrix_from_simple_form(restore_song_size(state_matrix, 0, 88))
+    song.set_StateMatrix_from_simple_form(restore_song_size(state_matrix,
+                                                            0, 88))
 
     Conversion.write_state_matrix_file(path, song)
