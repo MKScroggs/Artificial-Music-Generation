@@ -10,19 +10,6 @@ from time import time
 np.random.seed(6)
 
 
-def startup():
-    # convert the midi folder to ensure songs are present in txt form
-    Conversion.convert_midi_folder(smallest_note=16)
-    Conversion.convert_txt_folder()
-
-    # return the time to use as an identifier in creating files
-    return str(int(time()))
-
-
-def close():
-    Conversion.convert_txt_folder()
-
-
 def build_new_network(shape=[512, 512], learning_rate=.01,
                       interval_width=88, history_length=16,
                       loss="categorical_crossentropy",
@@ -311,25 +298,54 @@ def test_full_accompaniment_run(
 if __name__ == "__main__":
     try:
         arg = sys.argv[1]
+        mode = sys.argv[2]
     except:
-        print("Options are: 'midi' for midi-conversion, 'load [mode] \
-              [network]' to load a network (modes are -view and -test) and \
-              'full' for a full training run")
-        print("Running in 'full' mode")
-        arg = "full"
-
-    if arg == "midi":
-        Conversion.convert_midi_folder(smallest_note=16)
-        Conversion.convert_txt_folder()
-    elif arg == "load":
-        mode = None
-        target = None
+        print("Options are: 'load [mode] [network]' to load a network "
+              "(modes are -view and -test) and 'full [mode]' for a full "
+              "training run (modes are -melody, -accomp, and -anneal)")
+        raise Exception()
+        
+    if arg == "full":  # do a full run
         try:
-            mode = sys.argv[2]
-            if mode != "-testa" and mode != "=testm" and mode != "-view":
+            if mode != "-melody" and mode != "-accomp" and mode != "anneal":
                 raise Exception()
         except:
-            print("Invalid or empty field for 'mode'.")
+            print("Invalid field for 'mode'.")
+            raise Exception()
+        def learning_schedule(lr):
+            return lr * .9
+
+        learning_rate_callback = Networks.LearningRateCallback(
+            learning_schedule)
+
+        if mode == "-melody":
+            full_melody_run(shape=[512, 512], epochs=1, iterations=25,
+                            callbacks=[learning_rate_callback],
+                            learning_rate=.001, 
+                            train_dataset=DataSets.sonatas,
+                            seed_dataset=["minor_seed"],
+                            history_length=16*6,
+                            loss="categorical_crossentropy",
+                            activation="softmax")
+        elif mode == "-accomp":
+            full_accompaniment_run(shape=[512, 512, 256], epochs=1,
+                                   iterations=100, callbacks=[],
+                                   learning_rate=.0001,
+                                   train_dataset=DataSets.sonatas,
+                                   seed_dataset=DataSets.small_melody_seed,
+                                   history_length=int(16*1),
+                                   loss="categorical_crossentropy",
+                                   activation="softmax", batch_size=1026)
+        else:
+            raise NotImplementedError()
+                                   
+    elif arg == "load":
+        target = None
+        try:
+            if mode != "-test" and mode != "-view":
+                raise Exception()
+        except:
+            print("Invalid field for 'mode'.")
             raise Exception()
         try:
             target = "Networks/" + sys.argv[3]
@@ -352,38 +368,3 @@ if __name__ == "__main__":
                                          seed_dataset=["minor_seed",
                                                        "major_seed",
                                                        "Twinkle"])
-        else:
-            raise Exception()
-        close()
-    else:  # do a full run
-        def learning_schedule(lr):
-            return lr * .9
-
-        learning_rate_callback = Networks.LearningRateCallback(
-            learning_schedule)
-
-        mode = None
-        try:
-            mode = sys.argv[2]
-            if mode != "-m" and mode != "-a":
-                raise Exception()
-        except:
-            print("Invalid or empty field for 'mode'.")
-            raise Exception()
-        if mode == "-m":
-            full_melody_run(shape=[512, 512], epochs=1, iterations=25,
-                            callbacks=[learning_rate_callback],
-                            learning_rate=.001, train_dataset=DataSets.sonatas,
-                            seed_dataset=["minor_seed"],
-                            history_length=16*6,
-                            loss="categorical_crossentropy",
-                            activation="softmax")
-        else:
-            full_accompaniment_run(shape=[512, 512, 256], epochs=1,
-                                   iterations=100, callbacks=[],
-                                   learning_rate=.0001,
-                                   train_dataset=DataSets.sonatas,
-                                   seed_dataset=DataSets.small_melody_seed,
-                                   history_length=int(16*1),
-                                   loss="categorical_crossentropy",
-                                   activation="softmax", batch_size=1026)

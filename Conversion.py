@@ -1,3 +1,4 @@
+
 # Modified from https://github.com/hexahedria/biaxial-rnn-music-composition/
 # blob/master/midi_to_statematrix.py
 import midi

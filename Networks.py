@@ -39,79 +39,6 @@ def view_network(model):
           (model.layers[0].get_config().get("batch_input_shape")[1]))
 
 
-'''
-class LearningRateCallback(Callback):
-    def __init__(self, update, verbose=False, monitor='loss',
-                 patience=0, stop=3):
-        super(LearningRateCallback, self).__init__()
-
-        self.update = update
-        self.monitor = monitor
-        self.patience = patience
-
-        self.wait = 0
-        self.best = np.Inf
-        self.stop = 3
-
-        self.verbose = verbose
-
-        self.monitor_op = np.less
-
-    def on_epoch_end(self, epoch, logs={}):
-        current = logs.get(self.monitor)
-        if self.monitor_op(current, self.best):
-
-            self.best = current
-            self.wait = 0
-        else:
-            if self.verbose:
-                print("\nCurrent: {}, Best: {}".format(current, self.best))
-            if self.wait >= self.patience:
-                """
-                if self.wait >= self.stop:
-                    self.model.stop_training = True
-                    print("Stopping Early!")
-                    return
-                """
-                new_lr = self.update(backend.get_value
-                                    (self.model.optimizer.lr))
-                backend.set_value(self.model.optimizer.lr, new_lr)
-                if self.verbose:
-                    print("\nNew Learning rate: {}".format(new_lr))
-            self.wait += 1
-'''
-
-
-def get_SimpleRNN(shape, optimizer, loss, interval_width, history_length,
-                  activation, dropout=0):
-    model = Sequential()
-    if len(shape) == 1:  # for a single layer network
-            model.add(SimpleRNN(shape[0], input_shape=(history_length,
-                                                       interval_width)))
-            if dropout > 0:
-                model.add(Dropout(dropout))
-    else:  # for a multi-layer netowrk
-        last_layer = len(shape) - 1
-        for i, width in enumerate(shape):
-            if i == 0:  # the first layer need to specify input_shape
-                model.add(SimpleRNN(width,
-                                    input_shape=(history_length,
-                                                 interval_width),
-                                    return_sequences=True))
-            elif i == last_layer:  # the last layer does not return sequences
-                model.add(SimpleRNN(width))
-            else:  # middle layers need return sequences, but not input shape
-                model.add(SimpleRNN(width, return_sequences=True))
-            if dropout > 0:  # finally, if we are applying dropout, add it
-                model.add(Dropout(dropout))
-    # after all layers, add a dense layer and then the activation layer
-    model.add(Dense(interval_width, activation=activation))
-
-    model.compile(optimizer=optimizer, loss=loss)
-
-    return model
-
-
 def get_LSTM(shape, optimizer, loss, interval_width, history_length,
              activation, dropout=0, metrics=[]):
     model = Sequential()
@@ -140,38 +67,6 @@ def get_LSTM(shape, optimizer, loss, interval_width, history_length,
     model.add(Dense(interval_width, activation=activation))
 
     model.compile(optimizer=optimizer, loss=loss, metrics=metrics)
-
-    return model
-
-
-def get_GRU(shape, optimizer, loss, interval_width, history_length,
-            activation, dropout=0):
-    model = Sequential()
-    if len(shape) == 1:  # for a single layer network
-            model.add(GRU(shape[0],
-                          input_shape=(history_length, interval_width),
-                          consume_less="gpu"))
-            if dropout > 0:
-                model.add(Dropout(dropout))
-    else:  # for a multi-layer netowrk
-        last_layer = len(shape) - 1
-        for i, width in enumerate(shape):
-            if i == 0:  # the first layer need to specify input_shape
-                model.add(GRU(width,
-                              input_shape=(history_length, interval_width),
-                              consume_less="gpu", return_sequences=True))
-            elif i == last_layer:  # the last layer does not return sequences
-                model.add(GRU(width, consume_less="gpu"))
-            else:  # middle layers need return sequences, but not input shape
-                model.add(GRU(width, consume_less="gpu",
-                              return_sequences=True))
-            if dropout > 0:  # finally, if we are applying dropout, add it
-                model.add(Dropout(dropout))
-        
-    # after all layers, add a dense layer and then the activation layer
-    model.add(Dense(interval_width, activation=activation))
-
-    model.compile(optimizer=optimizer, loss=loss)
 
     return model
 
