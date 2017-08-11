@@ -1,5 +1,5 @@
 import Conversion
-import keras.optimizers
+from  keras import optimizers
 import DataSets
 import Networks
 import Processing
@@ -294,8 +294,23 @@ def test_full_accompaniment_run(
 
     close()
 
+def load_songs(song_names):
+    songs = []
+    for song_name in song_names:
+    	song = Conversion.load_song(song_name)
+        
 
 if __name__ == "__main__":
+    print("test")
+    #load song
+    song = Conversion.load_song("test")
+    Conversion.save_song(song, "test_rewrite")
+    song = Conversion.load_song("test2")
+    Conversion.save_song(song, "test2_rewrite")
+    #save song
+    pass
+    exit()
+    
     try:
         arg = sys.argv[1]
         mode = sys.argv[2]

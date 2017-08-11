@@ -1,6 +1,55 @@
 notes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
 
 
+def get_start_of_notes(matrix):
+    """
+    Finds the position of the first note hit (in time, not pitch)
+    :param matrix: the matrix
+    :return: the position of the first note
+    """
+    for i, state in enumerate(matrix):
+        for note in state:
+            if note[0] == 1:
+                return i
+
+
+def get_end_of_notes(matrix):
+    """
+    Finds the position of the last note hit (in time, not pitch)
+    :param matrix: the matrix
+    :return: the position of the last note
+    """
+    for i, state in reversed(list(enumerate(matrix))):
+        for note in state:
+            if note[0] == 1:
+                return i + 1
+
+
+def fix_trailing_rests(song):
+    """
+    Ensures that a song has 0 blank states to start and to end. If not
+    it makes it so.
+    :param song: song to fix (they are almost never right to start...)
+    :return: the fixed song
+    """
+    matrix = song.StateMatrix
+
+    # create the blank state for
+    blank_state = [[0, 0] for note in matrix[0]]
+
+    # find the ends
+    start_of_notes = get_start_of_notes(matrix)
+    end_of_notes = get_end_of_notes(matrix)
+
+    new_matrix = []
+
+    for state in matrix[start_of_notes:end_of_notes]:
+        new_matrix .append(state)
+
+    song.StateMatrix = new_matrix
+    return song
+
+
 class TimeSignature(object):
     """
     Simple class for the time signature to reduce parameter passing
