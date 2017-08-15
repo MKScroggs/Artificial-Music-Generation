@@ -51,7 +51,7 @@ def midi_to_song(filename, base_note=4, beats_per_measure=4, smallest_note=8,
                  triplets=False, tempo=100):
     """
     Reads a Midi File and generates a Song object to return
-    
+
     :param midifile: The file to read
     :param name:  The name of the song
     :param time_sig: The time signature of the song (type TimeSignature)
