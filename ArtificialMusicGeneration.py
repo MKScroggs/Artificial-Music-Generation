@@ -297,8 +297,11 @@ def test_full_accompaniment_run(
 def load_songs(song_names):
     songs = []
     for song_name in song_names:
-        song = Conversion.midi_to_song(song_name)
-        songs.append(song)
+        try:
+            song = Conversion.midi_to_song(song_name)
+            songs.append(song)
+        except:
+            pass  # ignore the song
     return songs
 
 
@@ -309,12 +312,9 @@ def save_songs(songs):
 
 if __name__ == "__main__":
     # load song
-    song = load_songs(["test"])
-
-    # save song
-    save_songs(song)
-    song[0].TrackName = "test2"
-    save_songs(song)
+    songs = load_songs(["44majorshort", "34majorshort"])
+    # for song in songs:
+    # song.get_training_matrix(mode="Full")
     pass
     exit()
     
@@ -343,7 +343,7 @@ if __name__ == "__main__":
         if mode == "-melody":
             full_melody_run(shape=[512, 512], epochs=1, iterations=25,
                             callbacks=[learning_rate_callback],
-                            learning_rate=.001, 
+                            learning_rate=.001,
                             train_dataset=DataSets.sonatas,
                             seed_dataset=["minor_seed"],
                             history_length=16*6,

@@ -25,6 +25,34 @@ def get_end_of_notes(matrix):
                 return i + 1
 
 
+def get_notes_from_interval(interval, include_pressed):
+    """
+    Gets the notes in an interval and returns a list of them, including pressed
+    if include_pressed is True
+    """
+    return_interval = []
+    for note in interval:
+        return_interval.append(note[0])
+        if include_pressed:
+            return_interval.append(note[1])
+    return return_interval
+
+
+def get_beat_from_interval(interval, smallest_note, base_note, bpm):
+    """
+    Makes the tempo data from the interval count and the smallest_note
+    """
+    return_list = []
+
+    intervals_per_measure = smallest_note / base_note * bpm
+    for i in range(intervals_per_measure):
+        if interval % smallest_note == i:
+            return_list.append(1)
+        else:
+            return_list.append(0)
+    return return_list
+
+
 def fix_trailing_rests(song):
     """
     Ensures that a song has 0 blank states to start and to end. If not
@@ -40,7 +68,6 @@ def fix_trailing_rests(song):
     # find the ends
     start_of_notes = get_start_of_notes(matrix)
     end_of_notes = get_end_of_notes(matrix)
-
     new_matrix = []
 
     for state in matrix[start_of_notes:end_of_notes]:
@@ -50,29 +77,71 @@ def fix_trailing_rests(song):
     return song
 
 
-class TimeSignature(object):
-    """
-    Simple class for the time signature to reduce parameter passing
-    """
-    def __init__(self, beats=4, base=4):
-        self.BeatsPerMeasure = beats  # in 2:4 time, this is the 2
-        self.BaseNote = base  # and this is the 4
-
-
 class Song(object):
     """
     Class that holds a song with its metadata
     """
     def __init__(self, name, base_note, beats_per_base_note, interval, tempo,
-                 state_matrix, resolution):
+                 state_matrix, resolution, smallest_note):
         self.TrackName = name
-        self.TimeSignature = TimeSignature(base_note, beats_per_base_note)
+        self.BaseNote = base_note
+        self.BeatsPerBaseNote = beats_per_base_note
         self.Tempo = tempo
         self.Interval = interval
         self.StateMatrix = state_matrix
         self.MelodyStateMatrix = []
         self.Resolution = resolution
         self.melody_matrix_set = False
+        self.SmallestNote = smallest_note
+
+    def get_training_matrix(self, mode="Melody", include_pressed=True,
+                            include_beat=True, include_key=True,
+                            include_tone=True):
+        '''
+        Creates a matrix for training with the song as well as additional
+        meta-data. The format is a 2d list in the following order:
+        [[note-down, note-pressed]...], [beat,...], [key...], [tone...]
+        where note down is if the note is being pressed during the interval,
+        note pressed is if the note is freshly pressed that interval,
+        beat is what beat we are on represented by a list of 0's with a 1 on
+        the current beat,
+        key is a list of the keys, and tone is either major or minor
+        :param mode: either melody or full. If melody, only the melody will be
+        included.
+        '''
+
+        # prepare the matricies to be filled
+        training_matrix = []
+        matrix = []
+
+        # if on melody mode, use only the melody, else use full song
+        if mode == "Melody":
+            if self.melody_matrix_set is False:
+                self.set_melodymatrix_from_StateMatrix
+            matrix = self.MelodyStateMatrix
+
+        elif mode == "Full":
+            matrix = self.StateMatrix
+        else:
+            # not a valid choice
+            raise Exception("get_training_matrix not 'Melody' of 'Full'")
+
+        # for each interval in the matrix
+        song_len = len(matrix)
+        print(song_len)
+        for interval in range(song_len):
+            new_interval = get_notes_from_interval(matrix[interval],
+                                                   include_pressed)
+ 
+            if include_beat:
+                new_interval = new_interval + \
+                               get_beat_from_interval(interval,
+                                                      self.SmallestNote,
+                                                      self.BaseNote,
+                                                      self.BeatsPerBaseNote)
+                print(new_interval)
+
+        return training_matrix
 
     def get_simple_matrix(self):
         simple_matrix = []
