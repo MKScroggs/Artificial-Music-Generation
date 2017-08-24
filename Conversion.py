@@ -6,12 +6,12 @@ import os
 import Song
 
 # middle octave
-# lowerBound = 60
-# upperBound = 72
+lowerBound = 60
+upperBound = 72
 
 # full keyboard
-lowerBound = 20
-upperBound = 108
+#lowerBound = 20
+#upperBound = 108
 volume = 50
 
 dir = os.path.dirname(os.path.realpath(__file__))
@@ -25,10 +25,13 @@ def get_ticks_per_interval(resolution, base_note, beats_per_measure,
     Midi uses ticks, which are non-constant in length between songs.
     to calculate ticks per beat we need to know Resolution (tempo provided too)
 
-    Tempo is Beats per minute / quarter-notes per minute
-    Resolution is pulses per quarter-note / ticks per beat
+    Resolution is pulses per quarter-note
 
-    Ticks per Measure = Resolution * Tempo
+    Ticks per Measure = Resolution * BPM
+
+    Intervals per measure = smallest note * (3 if triplets, 1 otherwise)
+
+    Ticks per Interval = Ticks per measure / Intervals per measure
 
     :param resolution: The resolution encoded in the midi file
     :param base_note: The base note in the time signature
@@ -38,11 +41,10 @@ def get_ticks_per_interval(resolution, base_note, beats_per_measure,
     store half-notes and larger[smaller notes become half-notes])
     :param triplets: are we accepting triplets
     """
-    # get the ticks per measure
+
     ticks_per_measure = resolution * beats_per_measure
 
-    # determine the number of intervals to train on per measure
-    intervals_per_measure = beats_per_measure * smallest_note / base_note
+    intervals_per_measure = smallest_note
 
     # if triplets are to be read properly, multiply by 3
     if triplets is True:
@@ -52,19 +54,54 @@ def get_ticks_per_interval(resolution, base_note, beats_per_measure,
     return int(ticks_per_measure / intervals_per_measure)
 
 
-def midi_to_song(filename, base_note=4, beats_per_measure=4, smallest_note=8,
-                 triplets=False, tempo=100, accepted_time_sigs=(2, 4)):
+def get_time_signature(pattern, accepted_time_sigs):
+    # default to 4:4 time
+    base_note = 4
+    beats_per_measure = 4
+
+    # how many ticks are there? for each track
+    time_left = [track[0].tick for track in pattern]
+    # initialize the positions of each track to 0
+    posns = [0 for track in pattern]
+    time = 0
+    while True:
+        # for each track
+        for i in range(len(time_left)):
+            while time_left[i] == 0:
+                track = pattern[i]
+                pos = posns[i]
+
+                evt = track[pos]
+
+                if isinstance(evt, midi.TimeSignatureEvent):
+                    if evt.numerator not in accepted_time_sigs:
+                        print("\t Unaccepted time-sig:{}:{}".format(
+                              evt.numerator, evt.denominator))
+                        raise Exception()
+                    # if it is an acceptable time sig save it
+                    beats_per_measure = evt.numerator
+                    base_note = evt.denominator
+                    return(beats_per_measure, base_note)
+
+                try:
+                    time_left[i] = track[pos + 1].tick
+                    posns[i] += 1
+                except IndexError:
+                    time_left[i] = None
+
+            if time_left[i] is not None:
+                time_left[i] -= 1
+
+        if all(t is None for t in time_left):
+            break
+
+        return(beats_per_measure, base_note)
+
+
+def midi_to_song(filename, smallest_note=4, triplets=False,
+                 accepted_time_sigs=(3, 4)):
     """
     Reads a Midi File and generates a Song object to return
-
-    :param midifile: The file to read
-    :param name:  The name of the song
-    :param time_sig: The time signature of the song (type TimeSignature)
-    :param desired_interval: the desired minimum interval size
-     (type DesiredInterval)
-    :param tempo: The default tempo of the piece. For use if the Midi lacks a
-     tempo. Defaults to 100.
-    :return: A song object containing the song read in
     """
 
     # display current file
@@ -73,13 +110,17 @@ def midi_to_song(filename, base_note=4, beats_per_measure=4, smallest_note=8,
     # read the file into patern
     pattern = midi.read_midifile(dir + "/Midi/" + filename + ".mid")
 
-    # time_signature = Song.TimeSignature(base_note, beats_per_measure)
-    # desired_interval = DesiredInterval(smallest_note, triplets)
+    # get the time sig from the midi
+    time_signature = get_time_signature(pattern, accepted_time_sigs)
 
     # get the number of ticks to read at a time
     ticks_per_interval = get_ticks_per_interval(pattern.resolution,
-                                                base_note, beats_per_measure,
+                                                time_signature[0],
+                                                time_signature[1],
                                                 smallest_note, triplets)
+
+    # build the song to return
+    song = Song.Song()
 
     # how many ticks are there? for each track
     time_left = [track[0].tick for track in pattern]
@@ -127,15 +168,7 @@ def midi_to_song(filename, base_note=4, beats_per_measure=4, smallest_note=8,
                     # we want to get the tempo for recreation purposes.
                     # This does not handle multi tempo songs well.
                     # (just picks the last tempo)
-                    tempo = int(evt.bpm)
-
-                # todo: make a way to respond to timesig changes
-
-                elif isinstance(evt, midi.TimeSignatureEvent):
-                    if evt.numerator not in accepted_time_sigs:
-                        print("\t Unaccepted time-sig:{}:{}".format(
-                              evt.numerator, evt.denominator))
-                        raise Exception()
+                    song.Tempo = int(evt.bpm)
 
                 try:
                     time_left[i] = track[pos + 1].tick
@@ -158,10 +191,12 @@ def midi_to_song(filename, base_note=4, beats_per_measure=4, smallest_note=8,
 
         time += 1
 
-    # build the song to return
-    song = Song.Song(filename, base_note, beats_per_measure,
-                     ticks_per_interval, tempo, state_matrix,
-                     pattern.resolution, smallest_note)
+    song.TrackName = filename
+    song.SmallestNote = smallest_note
+    song.Triplets = triplets
+    song.StateMatrix = state_matrix
+    song.BeatsPerMeasure = time_signature[0]
+    song.BaseNote = time_signature[1]
     return song
 
 

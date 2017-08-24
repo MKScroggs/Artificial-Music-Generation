@@ -301,6 +301,7 @@ def load_songs(song_names):
             song = Conversion.midi_to_song(song_name)
             songs.append(song)
         except:
+            print "Unexpected error:", sys.exc_info()[0]
             pass  # ignore the song
     return songs
 
@@ -313,9 +314,11 @@ def save_songs(songs):
 if __name__ == "__main__":
     # load song
     songs = load_songs(["44majorshort", "34majorshort"])
-    # for song in songs:
-    # song.get_training_matrix(mode="Full")
+    for song in songs:
+        song.get_training_matrix(mode="Full")
+    print(len(songs))
     pass
+
     exit()
     
     try:

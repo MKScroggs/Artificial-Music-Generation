@@ -81,18 +81,15 @@ class Song(object):
     """
     Class that holds a song with its metadata
     """
-    def __init__(self, name, base_note, beats_per_base_note, interval, tempo,
-                 state_matrix, resolution, smallest_note):
-        self.TrackName = name
-        self.BaseNote = base_note
-        self.BeatsPerBaseNote = beats_per_base_note
-        self.Tempo = tempo
-        self.Interval = interval
-        self.StateMatrix = state_matrix
-        self.MelodyStateMatrix = []
-        self.Resolution = resolution
-        self.melody_matrix_set = False
-        self.SmallestNote = smallest_note
+    def __init__(self):
+        self.TrackName = None
+        self.StateMatrix = None
+        self.MelodyStateMatrix = None
+        self.SmallestNote = None
+        self.Triplets = False
+        self.BaseNote = None
+        self.BeatsPerMeasure = None
+        self.Tempo = None
 
     def get_training_matrix(self, mode="Melody", include_pressed=True,
                             include_beat=True, include_key=True,
@@ -138,7 +135,7 @@ class Song(object):
                                get_beat_from_interval(interval,
                                                       self.SmallestNote,
                                                       self.BaseNote,
-                                                      self.BeatsPerBaseNote)
+                                                      self.BeatsPerMeasure)
                 print(new_interval)
 
         return training_matrix
