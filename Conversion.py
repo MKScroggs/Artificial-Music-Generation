@@ -5,13 +5,6 @@ import numpy
 import os
 import Song
 
-# middle octave
-lowerBound = 60
-upperBound = 72
-
-# full keyboard
-#lowerBound = 20
-#upperBound = 108
 volume = 50
 
 dir = os.path.dirname(os.path.realpath(__file__))
@@ -55,6 +48,10 @@ def get_ticks_per_interval(resolution, base_note, beats_per_measure,
 
 
 def get_time_signature(pattern, accepted_time_sigs):
+    """
+    extracts the time signature from the midi input. Note, in multi time
+    signature songs, only the FIRST time signature is read.
+    """
     # default to 4:4 time
     base_note = 4
     beats_per_measure = 4
@@ -63,7 +60,7 @@ def get_time_signature(pattern, accepted_time_sigs):
     time_left = [track[0].tick for track in pattern]
     # initialize the positions of each track to 0
     posns = [0 for track in pattern]
-    time = 0
+
     while True:
         # for each track
         for i in range(len(time_left)):
@@ -98,8 +95,8 @@ def get_time_signature(pattern, accepted_time_sigs):
         return(beats_per_measure, base_note)
 
 
-def midi_to_song(filename, smallest_note=4, triplets=False,
-                 accepted_time_sigs=(3, 4)):
+def midi_to_song(filename, smallest_note, triplets, accepted_time_sigs,
+                 lower_bound, upper_bound):
     """
     Reads a Midi File and generates a Song object to return
     """
@@ -132,7 +129,7 @@ def midi_to_song(filename, smallest_note=4, triplets=False,
     state_matrix = []
 
     # how many keys are we accepting
-    span = upperBound - lowerBound
+    span = upper_bound - lower_bound
 
     # initialize the start time
     time = 0
@@ -153,16 +150,16 @@ def midi_to_song(filename, smallest_note=4, triplets=False,
                 evt = track[pos]
                 # read the note events
                 if isinstance(evt, midi.NoteEvent):
-                    if (evt.pitch < lowerBound) or (evt.pitch >= upperBound):
+                    if (evt.pitch < lower_bound) or (evt.pitch >= upper_bound):
                         pass
                         # print "Note {} at time {} out of bounds
                         # (ignoring)".format(evt.pitch, time)
                     else:
                         if isinstance(evt, midi.NoteOffEvent) or \
                            evt.velocity == 0:
-                            state[evt.pitch - lowerBound] = [0, 0]
+                            state[evt.pitch - lower_bound] = [0, 0]
                         else:
-                            state[evt.pitch - lowerBound] = [1, 1]
+                            state[evt.pitch - lower_bound] = [1, 1]
 
                 elif isinstance(evt, midi.SetTempoEvent):
                     # we want to get the tempo for recreation purposes.
@@ -200,7 +197,7 @@ def midi_to_song(filename, smallest_note=4, triplets=False,
     return song
 
 
-def song_to_midi(song):
+def song_to_midi(song, lower_bound, upper_bound):
     """
     Converts a song to Midi and writes to a file
     :param song: The song to convert
@@ -213,7 +210,7 @@ def song_to_midi(song):
     track = midi.Track()
     pattern.append(track)
 
-    span = upperBound - lowerBound
+    span = upper_bound - lower_bound
 
     tickscale = song.Interval
 
@@ -245,12 +242,12 @@ def song_to_midi(song):
                 onNotes.append(i)
         for note in offNotes:
             track.append(midi.NoteOffEvent(tick=(time - lastcmdtime) *
-                                           tickscale, pitch=note + lowerBound))
+                                           tickscale, pitch=note + lower_bound))
             lastcmdtime = time
         for note in onNotes:
             track.append(midi.NoteOnEvent(tick=(time - lastcmdtime) *
                                           tickscale, velocity=volume,
-                                          pitch=note + lowerBound))
+                                          pitch=note + lower_bound))
             lastcmdtime = time
 
         prevstate = state

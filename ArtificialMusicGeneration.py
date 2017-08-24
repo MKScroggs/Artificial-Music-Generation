@@ -9,6 +9,29 @@ import sys
 from time import time
 np.random.seed(6)
 
+# Parameters for the run
+
+# keyboard locations and midi representations
+middle_octave_start = 60
+middle_octave_end = 72
+full_keyboard_start = 20
+full_keyboard_end = 108
+
+debug = True
+
+lower_bound = full_keyboard_start
+upper_bound = full_keyboard_end
+
+smallest_note = 8
+
+accepted_time_sigs = (3, 4)
+
+triplets = False
+
+if debug:
+    lower_bound = middle_octave_start
+    upper_bound = middle_octave_end
+
 
 def build_new_network(shape=[512, 512], learning_rate=.01,
                       interval_width=88, history_length=16,
@@ -137,8 +160,7 @@ def full_melody_run(learning_rate=.01, loss="categorical_crossentropy",
     print("Starting up...")
     # do startup things like prepare txt files. Also get an identifier for the
     # current test to use in file naming and network saving.
-    identifier = startup()
-
+    
     data = Processing.Data()
     # this holds the data we use. The functions that it is passed to fill
     # its variables.
@@ -162,9 +184,6 @@ def full_melody_run(learning_rate=.01, loss="categorical_crossentropy",
                   batch_size=batch_size, interval_width=88,
                   history_length=history_length, identifier=identifier,
                   generation_length=generation_length, iterations=iterations)
-
-    close()
-
 
 def full_accompaniment_run(learning_rate=.01, loss="categorical_crossentropy",
                            activation="softmax", callbacks=[],
@@ -298,25 +317,26 @@ def load_songs(song_names):
     songs = []
     for song_name in song_names:
         try:
-            song = Conversion.midi_to_song(song_name)
+            song = Conversion.midi_to_song(song_name, smallest_note, triplets,
+                                           accepted_time_sigs,
+                                           lower_bound, upper_bound)
             songs.append(song)
-        except:
-            print "Unexpected error:", sys.exc_info()[0]
+        except Exception as ex:
+            print ex
             pass  # ignore the song
     return songs
 
 
 def save_songs(songs):
     for song in songs:
-        Conversion.song_to_midi(song)
+        Conversion.song_to_midi(song, lower_bound, upper_bound)
 
 
 if __name__ == "__main__":
     # load song
     songs = load_songs(["44majorshort", "34majorshort"])
     for song in songs:
-        song.get_training_matrix(mode="Full")
-    print(len(songs))
+        song.get_training_matrix(mode="Full", greatest_bpm=4)
     pass
 
     exit()

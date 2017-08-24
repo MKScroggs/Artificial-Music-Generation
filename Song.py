@@ -38,15 +38,22 @@ def get_notes_from_interval(interval, include_pressed):
     return return_interval
 
 
-def get_beat_from_interval(interval, smallest_note, base_note, bpm):
+def get_beat_from_interval(interval, smallest_note, base_note, bpm,
+                           greatest_bpm):
     """
     Makes the tempo data from the interval count and the smallest_note
+    :param greatest_bpm: This is the largest bpm in all the songs being used,
+    not just the current song. It is used to pad 0's to ensure all songs are of
+    the same width.
     """
     return_list = []
 
+    # used for modular math to ensure correct beats
     intervals_per_measure = smallest_note / base_note * bpm
-    for i in range(intervals_per_measure):
-        if interval % smallest_note == i:
+    # used to ensure that each song is padded to the same length
+    greatest_intervals_per_measure = smallest_note / base_note * greatest_bpm
+    for i in range(greatest_intervals_per_measure):
+        if interval % intervals_per_measure == i:
             return_list.append(1)
         else:
             return_list.append(0)
@@ -91,18 +98,18 @@ class Song(object):
         self.BeatsPerMeasure = None
         self.Tempo = None
 
-    def get_training_matrix(self, mode="Melody", include_pressed=True,
-                            include_beat=True, include_key=True,
+    def get_training_matrix(self, greatest_bpm, mode="Melody",
+                            include_pressed=True, include_beat=True,
                             include_tone=True):
         '''
         Creates a matrix for training with the song as well as additional
         meta-data. The format is a 2d list in the following order:
-        [[note-down, note-pressed]...], [beat,...], [key...], [tone...]
+        [[note-down, note-pressed]...], [beat,...], [tone...]
         where note down is if the note is being pressed during the interval,
         note pressed is if the note is freshly pressed that interval,
         beat is what beat we are on represented by a list of 0's with a 1 on
         the current beat,
-        key is a list of the keys, and tone is either major or minor
+        and tone is either major or minor
         :param mode: either melody or full. If melody, only the melody will be
         included.
         '''
@@ -135,7 +142,8 @@ class Song(object):
                                get_beat_from_interval(interval,
                                                       self.SmallestNote,
                                                       self.BaseNote,
-                                                      self.BeatsPerMeasure)
+                                                      self.BeatsPerMeasure,
+                                                      greatest_bpm)
                 print(new_interval)
 
         return training_matrix
