@@ -1,89 +1,6 @@
 notes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
 
 
-def get_start_of_notes(matrix):
-    """
-    Finds the position of the first note hit (in time, not pitch)
-    :param matrix: the matrix
-    :return: the position of the first note
-    """
-    for i, state in enumerate(matrix):
-        for note in state:
-            if note[0] == 1:
-                return i
-
-
-def get_end_of_notes(matrix):
-    """
-    Finds the position of the last note hit (in time, not pitch)
-    :param matrix: the matrix
-    :return: the position of the last note
-    """
-    for i, state in reversed(list(enumerate(matrix))):
-        for note in state:
-            if note[0] == 1:
-                return i + 1
-
-
-def get_notes_from_interval(interval, include_pressed):
-    """
-    Gets the notes in an interval and returns a list of them, including pressed
-    if include_pressed is True
-    """
-    return_interval = []
-    for note in interval:
-        return_interval.append(note[0])
-        if include_pressed:
-            return_interval.append(note[1])
-    return return_interval
-
-
-def get_beat_from_interval(interval, smallest_note, base_note, bpm,
-                           greatest_bpm):
-    """
-    Makes the tempo data from the interval count and the smallest_note
-    :param greatest_bpm: This is the largest bpm in all the songs being used,
-    not just the current song. It is used to pad 0's to ensure all songs are of
-    the same width.
-    """
-    return_list = []
-
-    # used for modular math to ensure correct beats
-    intervals_per_measure = smallest_note / base_note * bpm
-    # used to ensure that each song is padded to the same length
-    greatest_intervals_per_measure = smallest_note / base_note * greatest_bpm
-    for i in range(greatest_intervals_per_measure):
-        if interval % intervals_per_measure == i:
-            return_list.append(1)
-        else:
-            return_list.append(0)
-    return return_list
-
-
-def fix_trailing_rests(song):
-    """
-    Ensures that a song has 0 blank states to start and to end. If not
-    it makes it so.
-    :param song: song to fix (they are almost never right to start...)
-    :return: the fixed song
-    """
-    matrix = song.StateMatrix
-
-    # create the blank state for
-    blank_state = [[0, 0] for note in matrix[0]]
-
-    # find the ends
-    start_of_notes = get_start_of_notes(matrix)
-    end_of_notes = get_end_of_notes(matrix)
-    new_matrix = []
-
-    for state in matrix[start_of_notes:end_of_notes]:
-        new_matrix .append(state)
-
-    song.StateMatrix = new_matrix
-    return song
-
-
 class Song(object):
     """
     Class that holds a song with its metadata
@@ -97,10 +14,21 @@ class Song(object):
         self.BaseNote = None
         self.BeatsPerMeasure = None
         self.Tempo = None
+        self.Tone = None
+
+    def prepare_song(self, transpose=True):
+        """
+        Removes all rests preceeding and following the song. Also transposes to
+        middle-c
+        """
+        self.fix_trailing_rests()
+        if transpose:
+            self.transpose()
+        pass
 
     def get_training_matrix(self, greatest_bpm, mode="Melody",
                             include_pressed=True, include_beat=True,
-                            include_tone=True):
+                            include_tone=True, padding=16):
         '''
         Creates a matrix for training with the song as well as additional
         meta-data. The format is a 2d list in the following order:
@@ -120,111 +48,70 @@ class Song(object):
 
         # if on melody mode, use only the melody, else use full song
         if mode == "Melody":
-            if self.melody_matrix_set is False:
-                self.set_melodymatrix_from_StateMatrix
+            if self.MelodyStateMatrix is None:
+                self.extract_melody()
             matrix = self.MelodyStateMatrix
-
         elif mode == "Full":
             matrix = self.StateMatrix
         else:
             # not a valid choice
             raise Exception("get_training_matrix not 'Melody' of 'Full'")
 
+        interval_width = len(matrix[0])
+
+        # add the padding
+        padding_matrix = [[[0, 0] for i in range(interval_width)]
+                          for j in range(padding)]
+        matrix = padding_matrix + matrix + padding_matrix
+
         # for each interval in the matrix
         song_len = len(matrix)
-        print(song_len)
+
         for interval in range(song_len):
             new_interval = get_notes_from_interval(matrix[interval],
                                                    include_pressed)
- 
+
             if include_beat:
+                # subract padding to ensure that the actual song starts on the
+                # 1 beat
                 new_interval = new_interval + \
-                               get_beat_from_interval(interval,
+                               get_beat_from_interval(interval - padding,
                                                       self.SmallestNote,
                                                       self.BaseNote,
                                                       self.BeatsPerMeasure,
                                                       greatest_bpm)
-                print(new_interval)
 
+            if include_tone:
+                if self.Tone is None:
+                    self.predict_tone()
+                if self.Tone == "Major":
+                    new_interval.append(1)
+                else:
+                    new_interval.append(0)
+            training_matrix.append(new_interval)
+
+        # add padding after interval to not have song position
         return training_matrix
 
-    def get_simple_matrix(self):
-        simple_matrix = []
-        for line in self.StateMatrix:
-            simple_matrix.append([x[0] for x in line])
-        return simple_matrix
+    def fix_trailing_rests(self):
+        """
+        Ensures that a song has 0 blank states to start and to end. If not
+        it makes it so.
+        :param song: song to fix (they are almost never right to start...)
+        """
+        # find the ends
+        start_of_notes = get_start_of_notes(self.StateMatrix)
+        end_of_notes = get_end_of_notes(self.StateMatrix)
+        new_matrix = []
 
-    def get_simple_melody_matrix(self):
-        if self.melody_matrix_set is False:
-            self.set_melodymatrix_from_StateMatrix()
-        simple_matrix = []
-        for line in self.MelodyStateMatrix:
-            simple_matrix.append([x[0] for x in line])
-        return simple_matrix
+        # slice the list at the start and end
+        for state in self.StateMatrix[start_of_notes:end_of_notes]:
+            new_matrix .append(state)
 
-    def get_full_matrix(self):
-        full_matrix = []
-        for line in self.StateMatrix:
-            new_line = []
-            for pair in line:
-                new_line.append(pair[0])
-                new_line.append(pair[1])
-            full_matrix.append(new_line)
-        return full_matrix
+        self.StateMatrix = new_matrix
 
-    def get_full_melody_matrix(self):
-        if self.melody_matrix_set is False:
-            self.set_melodymatrix_from_StateMatrix()
-        full_matrix = []
-        for line in self.MelodyStateMatrix:
-            new_line = []
-            for pair in line:
-                new_line.append(pair[0])
-                new_line.append(pair[1])
-            full_matrix.append(new_line)
-        return full_matrix
-
-    def set_StateMatrix_from_simple_form(self, simple_matrix):
-        state_matrix = []
-
-        length = len(simple_matrix[0])
-        last_line = [0 for i in range(length)]
-        for line in simple_matrix:
-            new_line = []
-            for i in range(length):
-                if line[i] == 0:
-                    new_line.append([0, 0])
-                else:
-                    if last_line[i] == 0:
-                        new_line.append([1, 1])
-                    else:
-                        new_line.append([1, 0])
-            last_line = new_line
-            state_matrix.append(new_line)
-
-        self.StateMatrix = state_matrix
-        self.set_melodymatrix_from_StateMatrix()
-
-    def set_StateMatrix_from_full_form(self, full_matrix):
-        state_matrix = []
-
-        # divide by two as every two notes is a pair of hold and press
-        length = len(full_matrix[0])/2
-
-        for line in full_matrix:
-            new_line = []
-            for i in range(length):
-                index = i * 2
-                new_line.append([line[index], line[index + 1]])
-            state_matrix.append(new_line)
-
-        self.StateMatrix = state_matrix
-        self.set_melodymatrix_from_StateMatrix()
-
-    def set_melodymatrix_from_StateMatrix(self):
+    def extract_melody(self):
         melody_matrix = []
-
-        blank_interval = [[0, 0] for note in self.StateMatrix[0]]
 
         last = -1
         # for each interval
@@ -269,7 +156,7 @@ class Song(object):
         self.MelodyStateMatrix = melody_matrix
         self.melody_matrix_set = True
 
-    def transpose(self, transposition='auto', verbose=False):
+    def transpose(self, transposition='auto'):
         """
         Transposes a statematrix
         :param old_state_matrix: the matrix to transpose
@@ -278,7 +165,7 @@ class Song(object):
         :return:
         """
         if transposition == 'auto':
-            transposition = self.predict_key(verbose)
+            transposition = self.predict_key()
 
         if transposition is not 0:
             transposed_matrix = []
@@ -286,12 +173,8 @@ class Song(object):
                 transposed_matrix.append(state[transposition:] +
                                          state[:transposition])
             self.StateMatrix = transposed_matrix
-            self.set_melodymatrix_from_StateMatrix()
-        if verbose:
-            print("Final state after transposition: ")
-            self.predict_key(verbose)
 
-    def predict_key(self, verbose=False):
+    def predict_key(self):
         """
         attempts to predict the key of the song for auto-transposition
         """
@@ -299,15 +182,21 @@ class Song(object):
         mod_counts = get_mod_counts(counts)
 
         root = get_root(mod_counts)
+        transposition = root - 3  # takes into account the fact that key 20 is
+        # not a C key
+        return transposition
+
+    def predict_tone(self):
+        """
+        attempts to predict the tone (major/minor) of the song
+        """
+        counts = get_counts(self.StateMatrix)
+        mod_counts = get_mod_counts(counts)
+
+        root = get_root(mod_counts)
 
         # here for fun, not practical use.
-        tone = get_tone(root, mod_counts)
-
-        if verbose:
-            print(mod_counts)
-            print(notes[root] + " " + tone)
-        transposition = root - 3
-        return transposition
+        self.Tone = get_tone(root, mod_counts)
 
 
 def get_counts(state_matrix):
@@ -320,7 +209,7 @@ def get_counts(state_matrix):
         for i, note in enumerate(interval):
             if note[1] == 1:
                 # we are counting the presses, not note holds so note[1]
-                # note note[0]
+                # not note[0]
                 counts[i] += 1
 
     counts = counts[1:] + counts[:1]
@@ -358,7 +247,7 @@ def get_root(counts):
         if score > max_score:
             max_score = score
             root = i
-
+    #print(notes[root])
     return root
 
 
@@ -371,5 +260,78 @@ def get_tone(root, counts):
     The three errors may have been due to resolution (midi) issues.
     """
     if counts[(root + 4) % 12] >= counts[(root + 3) % 12]:
-        return "major"
-    return "minor"\
+        return "Major"
+    return "Minor"
+
+
+def display_matrix(matrix):
+    """
+    Displays a matrix in an easier to read format (X and ' '). For debug use.
+    """
+    for line in matrix:
+        display_line = []
+        for item in line:
+            if item == 1:
+                display_line.append("X")
+            else:
+                display_line.append(" ")
+        print(display_line)
+
+
+def get_start_of_notes(matrix):
+    """
+    Finds the position of the first note hit (in time, not pitch)
+    :param matrix: the matrix
+    :return: the position of the first note
+    """
+    for i, state in enumerate(matrix):
+        for note in state:
+            if note[0] == 1:
+                return i
+
+
+def get_end_of_notes(matrix):
+    """
+    Finds the position of the last note hit (in time, not pitch)
+    :param matrix: the matrix
+    :return: the position of the last note
+    """
+    for i, state in reversed(list(enumerate(matrix))):
+        for note in state:
+            if note[0] == 1:
+                return i + 1
+
+
+def get_notes_from_interval(interval, include_pressed):
+    """
+    Gets the notes in an interval and returns a list of them, including pressed
+    if include_pressed is True
+    """
+    return_interval = []
+    for note in interval:
+        return_interval.append(note[0])
+        if include_pressed:
+            return_interval.append(note[1])
+    return return_interval
+
+
+def get_beat_from_interval(interval, smallest_note, base_note, bpm,
+                           greatest_bpm):
+    """
+    Makes the beat data from the interval count and the smallest_note
+    :param greatest_bpm: This is the largest bpm in all the songs being used,
+    not just the current song. It is used to pad 0's to ensure all songs are of
+    the same width.
+    """
+    return_list = []
+
+    # used for modular math to ensure correct beats
+    intervals_per_measure = smallest_note / base_note * bpm
+    # used to ensure that each song is padded to the same length
+    greatest_intervals_per_measure = smallest_note / base_note * greatest_bpm
+    for i in range(greatest_intervals_per_measure):
+        if interval % intervals_per_measure == i:
+            return_list.append(1)
+        else:
+            return_list.append(0)
+    return return_list

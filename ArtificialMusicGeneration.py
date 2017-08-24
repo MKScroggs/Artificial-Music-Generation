@@ -1,10 +1,11 @@
 import Conversion
-from keras import optimizers
+# from keras import optimizers
 import DataSets
-import Networks
+# import Networks
 import Processing
 import numpy as np
 import os
+import Song
 import sys
 from time import time
 np.random.seed(6)
@@ -13,10 +14,11 @@ np.random.seed(6)
 
 # keyboard locations and midi representations
 middle_octave_start = 60
-middle_octave_end = 72
+middle_octave_end = 73
 full_keyboard_start = 20
 full_keyboard_end = 108
 
+debug = False
 debug = True
 
 lower_bound = full_keyboard_start
@@ -334,13 +336,75 @@ def save_songs(songs):
 
 if __name__ == "__main__":
     # load song
-    songs = load_songs(["44majorshort", "34majorshort"])
+    songs = load_songs(["transpose_test"])
     for song in songs:
-        song.get_training_matrix(mode="Full", greatest_bpm=4)
-    pass
+        song.prepare_song(not debug)
+        s = song.get_training_matrix(mode="Full", greatest_bpm=4, padding=5)
+        Song.display_matrix(s)
 
     exit()
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    """
     try:
         arg = sys.argv[1]
         mode = sys.argv[2]
@@ -413,3 +477,4 @@ if __name__ == "__main__":
                                          seed_dataset=["minor_seed",
                                                        "major_seed",
                                                        "Twinkle"])
+"""
