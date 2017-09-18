@@ -24,7 +24,6 @@ class Song(object):
         self.fix_trailing_rests()
         if transpose:
             self.transpose()
-        pass
 
     def get_training_matrix(self, greatest_bpm, mode="Melody",
                             include_pressed=True, include_beat=True,
@@ -32,7 +31,7 @@ class Song(object):
         '''
         Creates a matrix for training with the song as well as additional
         meta-data. The format is a 2d list in the following order:
-        [[note-down, note-pressed]...], [beat,...], [tone...]
+        [note-a-down, note-a-pressed..., beat,..., tone...]
         where note down is if the note is being pressed during the interval,
         note pressed is if the note is freshly pressed that interval,
         beat is what beat we are on represented by a list of 0's with a 1 on
@@ -247,7 +246,6 @@ def get_root(counts):
         if score > max_score:
             max_score = score
             root = i
-    #print(notes[root])
     return root
 
 

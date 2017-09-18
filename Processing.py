@@ -15,22 +15,33 @@ class Data(object):
         self.SeedInput = []
 
 
-def get_melody_training_data(songs, percent_to_train, set_size=8,
-                             start=0, width=88, data=None):
+def vectorize_standard(training_preceeding_intervals,
+                       training_next_interval,
+                       testing_preceeding_intervals,
+                       testing_next_interval, set_size):
+    width = 0
+    # (how many datagroups, length of datagroups, width of intervals)
+    training_input = np.zeros((len(training_preceeding_intervals),
+                               set_size - 1, width), dtype=np.bool)
+    # (how many datagroups, width of intervals)
+    training_target = np.zeros((len(training_preceeding_intervals), width),
+                               dtype=np.bool)
+
+    for i, section in enumerate(training_preceeding_intervals):
+        for t, interval in enumerate(section):
+            for c, note in enumerate(interval):
+                training_input[i, t, c] = note
+        for n, note in enumerate(training_next_interval[i]):
+            training_target[i, n] = note
+
+
+def get_melody_training_data(matricies, percent_to_train, set_size=8,
+                             keyboard_width=88, data=None):
     print("Building training data...")
     training_preceeding_intervals = []
     training_next_interval = []
     testing_preceeding_intervals = []
     testing_next_interval = []
-
-    print("Resizing matricies...")
-    matricies = []
-    for song in songs:
-        matrix = song.get_simple_melody_matrix()
-        resized_matrix = []
-        for line in matrix:
-            resized_matrix.append(line[start:start + width])
-        matricies.append(resized_matrix)
 
     for i, matrix in enumerate(matricies):
         print("... Building subsets for song {}".format(i))

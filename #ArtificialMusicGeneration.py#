@@ -30,6 +30,8 @@ if debug:
 
 smallest_note = 8
 
+Conversion.get_ticks_per_interval(
+
 training_set_length = 4
 include_pressed = True
 include_beat = True
